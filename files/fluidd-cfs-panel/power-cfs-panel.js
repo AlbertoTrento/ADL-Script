@@ -196,7 +196,7 @@
     if (hasMaterial) {
       slot.kind = "defined";
       slot.id = mat;
-      var entry = MATERIALS[mat];
+      var entry = MATERIALS[mat] || (/^1[0-9]{5}$/.test(mat) ? MATERIALS[mat.slice(1)] : undefined);
       if (entry) {
         slot.title = entry[2] || entry[1];
         // "Generic PLA" only repeats the type: show the name for the branded materials.
