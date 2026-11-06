@@ -1,19 +1,21 @@
+> **ADL Script** è la versione di [AlbertoTrento](https://github.com/AlbertoTrento/ADL-Script) del CFS Power Script, il progetto originale di [Boris SdK](https://github.com/borferkic/K1C-CFS-Power-Script). Licenza GPL-3.0. Modifiche registrate nella cronologia Git.
+
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/power-script-logo-dark.svg" />
-    <img src="docs/images/power-script-logo-light.svg" alt="CFS Power Script" width="460" />
+    <img src="docs/images/power-script-logo-light.svg" alt="ADL Script" width="460" />
   </picture>
-  <h1>CFS Power Script for the Creality K1C</h1>
+  <h1>ADL Script for the Creality K1C</h1>
 
-  <a href="https://github.com/borferkic/K1C-CFS-Power-Script/releases/latest"><img src="https://img.shields.io/github/v/release/borferkic/K1C-CFS-Power-Script?style=flat-square&color=2ea44f" alt="Latest release" /></a>
-  <a href="https://github.com/borferkic/K1C-CFS-Power-Script/commits/main"><img src="https://img.shields.io/github/last-commit/borferkic/K1C-CFS-Power-Script?style=flat-square&color=555" alt="Last commit" /></a>
+  <a href="https://github.com/AlbertoTrento/ADL-Script/releases/latest"><img src="https://img.shields.io/github/v/release/borferkic/K1C-CFS-Power-Script?style=flat-square&color=2ea44f" alt="Latest release" /></a>
+  <a href="https://github.com/AlbertoTrento/ADL-Script/commits/main"><img src="https://img.shields.io/github/last-commit/borferkic/K1C-CFS-Power-Script?style=flat-square&color=555" alt="Last commit" /></a>
   <img src="https://img.shields.io/badge/Printer-Creality%20K1C-0078D6?style=flat-square" alt="Printer: Creality K1C" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square" alt="License: GPL-3.0" /></a>
 </div>
 
 ## About
 
-CFS Power Script is a helper script for the **Creality K1C** running the
+ADL Script is a helper script for the **Creality K1C** running the
 **CFS Upgrade Kit firmware** (tested on `2.3.5.34`). It is a fork of the
 [Creality Helper Script](https://github.com/Guilouz/Creality-Helper-Script) by
 Guilouz, adapted to the K1C and to the CFS firmware.
@@ -25,12 +27,12 @@ Guilouz, adapted to the K1C and to the CFS firmware.
 
 ## Features
 
-- **PowerScreen touch interface.** Replaces the Creality touch screen with [PowerScreen](https://github.com/borferkic/K1C-CFS-POWER-SCREEN), a K1C interface aware of the CFS. Install the `stable` or `nightly` build from the menu; everything is backed up and can be restored, and updates come from Fluidd or Mainsail.
+- **PowerScreen touch interface.** Replaces the Creality touch screen with [ADL Screen](https://github.com/AlbertoTrento/ADL-Screen), a K1C interface aware of the CFS. Install the `stable` or `nightly` build from the menu; everything is backed up and can be restored, and updates come from Fluidd or Mainsail.
 - **Bed Coordinates Fix.** The CFS firmware misaligns the bed coordinates and limits of the K1C: the nozzle misses the cleaning brush, the slicer cannot use Y beyond 215 mm on a 220 mm bed and the bed mesh leaves the edges unmeasured. This module corrects all three, with a backup of the original values.
-- **Power Macros.** Installs the Power Script `gcode_macro.cfg`, `printer_params.cfg` and `box.cfg` (your originals are backed up) with the extra `STRESS_TEST` (motion stress test), `PID_HOTEND` (hotend PID calibration) and `RELOAD_CAMERA` (restart the camera service), `CAMERA_OFF` and `CAMERA_ON` (turn the camera off and on) macros.
+- **Power Macros.** Installs the ADL Script `gcode_macro.cfg`, `printer_params.cfg` and `box.cfg` (your originals are backed up) with the extra `STRESS_TEST` (motion stress test), `PID_HOTEND` (hotend PID calibration) and `RELOAD_CAMERA` (restart the camera service), `CAMERA_OFF` and `CAMERA_ON` (turn the camera off and on) macros.
 - **Manual filament change with `M600`.** The CFS firmware has no `M600`; this module adds it, keeps the CFS `RESUME` untouched and opens the PowerScreen **MANUAL FILAMENT CHANGE** menu (unload, load, resume, stop).
 - **KAMP adapted to the CFS.** Adaptive bed mesh and purge line that respect the CFS purge routine (see [KAMP and the CFS purge](#kamp-and-the-cfs-purge)).
-- **Custom boot animation.** A lightning bolt strikes the Creality logo, the Power Script logo flashes in, "POWER" assembles and "SCRIPT" is typed, with the "LOADING..." text at the top right. Applied automatically the first time the script runs, with the original animation backed up.
+- **Custom boot animation.** A lightning bolt strikes the Creality logo, the ADL Script logo flashes in, "POWER" assembles and "SCRIPT" is typed, with the "LOADING..." text at the top right. Applied automatically the first time the script runs, with the original animation backed up.
 - **CFS Diagnostics and USB auto-recovery (beta).** The random disconnection of the CFS is a critical fault of the printer with the CFS; this module records it and tries to recover from it. The CFS box sometimes shows as disconnected because the USB-serial adapter drops or its read channel stalls, and the Creality firmware does not recover. A small service **monitors the work of the CFS**: it logs every drop with its probable cause and, when the box stays disconnected, resets the USB adapter by software (never while printing). Its log can be switched off, downloaded and deleted from the **CFS DIAGNOSTICS** button of the Fluidd card.
 - **Camera on and off, to take the video traffic off the CFS.** The camera and the USB adapter of the CFS share one USB hub, and the drops of the adapter (`disabled by hub (EMI?)`) that disconnect the CFS box and leave the buffer blocked are being investigated together with the camera traffic: it is **not proven** to be the cause, but it is the easiest thing to switch off to find out. The Power Macros add `CAMERA_OFF` and `CAMERA_ON`, and PowerScreen has a **camera icon at the top right** of the title bar: tap it to turn the camera off or on, no SSH needed (see [Camera off and on](#camera-off-and-on-important-for-cfs-disconnections)).
 - **CFS card for Fluidd.** A card in the Fluidd dashboard with the four slots of the CFS (a spool in the real color, the material, the remaining filament and the loaded slot) and the humidity and temperature of the box. Click a spool to change its material and color. It can be undocked and dragged anywhere. It talks to Moonraker only: it does not need the Creality web server.
@@ -61,7 +63,7 @@ Guilouz, adapted to the K1C and to the CFS firmware.
 2. Clone the script into `/usr/data/helper-script` (this exact path is required):
 
    ```sh
-   git clone --depth 1 https://github.com/borferkic/K1C-CFS-Power-Script.git /usr/data/helper-script
+   git clone --depth 1 https://github.com/AlbertoTrento/ADL-Script.git /usr/data/helper-script
    ```
 
    If cloning fails with an SSL error, run this command and clone again:
@@ -81,10 +83,10 @@ Guilouz, adapted to the K1C and to the CFS firmware.
 ## Boot animation
 
 <p align="center">
-  <img src="docs/images/boot-animation.gif" alt="Power Script boot animation" width="480" />
+  <img src="docs/images/boot-animation.gif" alt="ADL Script boot animation" width="480" />
 </p>
 
-A lightning bolt strikes the Creality logo and, in a flash, the Power Script logo appears. "POWER" assembles
+A lightning bolt strikes the Creality logo and, in a flash, the ADL Script logo appears. "POWER" assembles
 letter by letter, the bolt glows twice, "SCRIPT" is typed and "LOADING..." cycles its dots at the top right for a couple of seconds. The whole animation lasts about 7 seconds.
 
 ## Screenshots
@@ -146,9 +148,9 @@ updates) are **disabled**. It then asks which build to install (`stable` or
 [Install] Menu → 6) Install Power Macros
 ```
 
-Installs the Power Script macros and parameters:
+Installs the ADL Script macros and parameters:
 
-- **Replaces** `gcode_macro.cfg`, `printer_params.cfg` and `box.cfg` with the Power Script versions, and adds the `[include gcode_macro.cfg]`, `[include printer_params.cfg]` and `[include box.cfg]` lines to `printer.cfg` when they are missing. The versions add the `STRESS_TEST` (motion stress test), `PID_HOTEND` (hotend PID calibration) and `RELOAD_CAMERA` (restart the camera service), `CAMERA_OFF` and `CAMERA_ON` (turn the camera off and on) macros.
+- **Replaces** `gcode_macro.cfg`, `printer_params.cfg` and `box.cfg` with the ADL Script versions, and adds the `[include gcode_macro.cfg]`, `[include printer_params.cfg]` and `[include box.cfg]` lines to `printer.cfg` when they are missing. The versions add the `STRESS_TEST` (motion stress test), `PID_HOTEND` (hotend PID calibration) and `RELOAD_CAMERA` (restart the camera service), `CAMERA_OFF` and `CAMERA_ON` (turn the camera off and on) macros.
 - - Sets the CFS purge to a single 100 mm purge per color change in `box.cfg` (`box_first_clean_length`, `box_need_clean_length`, `box_need_clean_length_max` at 100), instead of the Creality 140 mm purge done twice. The firmware purges in whole rounds of that length, so you get a single round only while the flushing volume of the slicer is about 240 mm³ or less; above that it purges twice (see [Double purge on color changes](#double-purge-on-color-changes-orcaslicer)). Klipper refuses to start if `box_need_clean_length` is larger than `box_first_clean_length`.
 - - Sets `Tn_extrude` to 200 (Creality: 140), the length the extruder pushes on the first load of each print. It was changed because of the **distance the filament has to travel** (a longer filament path, such as a longer tube between the CFS and the printer): with a long path the CFS can report a load error (`key835` *extrude error, maybe it's blocked at the connections*, or `key849` *retrude error*) on a spool that is not blocked, and on our K1C the loads that failed with 100 worked with 200. It is a tuning value, not a guaranteed fix: we also saw one load fail with 200, and the first load now pushes 200 mm instead of 100 (the log shows `extrude = 200.0`), so with a short, healthy path you can set it back to 100 in `box.cfg`.
 Keeps `START_PRINT` disabled when KAMP is installed, because KAMP provides its own.
@@ -232,8 +234,8 @@ Fluidd theme settings. Close the Fluidd tabs and clear the browser cache if the 
 [Customize & PowerScreen] Menu → 6) Install PowerUI Theme for Fluidd
 ```
 
-Adds the **PowerUI** theme to Fluidd and selects it: the Power Script logo in the top bar and as the faint
-background logo of the page (Fluidd's own *background logo* setting), and the Power Script green (`#4ADE80`) as the accent
+Adds the **PowerUI** theme to Fluidd and selects it: the ADL Script logo in the top bar and as the faint
+background logo of the page (Fluidd's own *background logo* setting), and the ADL Script green (`#4ADE80`) as the accent
 color. **It is applied automatically every time you install Fluidd from this script**, so it is the default theme; choose
 another one in the Fluidd theme settings if you prefer. If Fluidd is already installed, run this option once to add the theme.
 It is added to the Fluidd `config.json` without replacing it, so the themes of your Fluidd version and the Creality one
@@ -321,7 +323,7 @@ Requirement: *Klipper Gcode Shell Command* must be installed (the install adds a
 ### Boot animation
 
 The first time the script runs it replaces the boot animation in
-`/etc/boot-display` with the Power Script one (see the preview above). The original animation is saved in
+`/etc/boot-display` with the ADL Script one (see the preview above). The original animation is saved in
 `/usr/data/helper-script-backup/boot-display-original.tar.gz`. There is no menu
 entry: if a firmware update restores the Creality animation, clone the script
 again to apply it again.

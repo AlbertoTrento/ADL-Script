@@ -15,7 +15,7 @@ function migrate_update_manager_entry(){
           END { exit !found }' "$MOONRAKER_CFG"; then
     return 0
   fi
-  echo -e "${white}Info: Fixing the CFS Power Script entry in moonraker.conf file..."
+  echo -e "${white}Info: Fixing the ADL Script entry in moonraker.conf file..."
   awk '{ print }
        /^\[update_manager CFS-Power-Script\]/ { print "is_system_service: False" }' "$MOONRAKER_CFG" > "${MOONRAKER_CFG}.tmp"
   mv "${MOONRAKER_CFG}.tmp" "$MOONRAKER_CFG"

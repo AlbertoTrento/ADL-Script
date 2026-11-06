@@ -14,8 +14,8 @@ function power_script_theme_message(){
   title 'PowerUI Theme for Fluidd' "${yellow}"
   inner_line
   hr
-  echo -e " │ ${cyan}Adds the PowerUI theme to Fluidd: the Power Script logo,       ${white}│"
-  echo -e " │ ${cyan}the Power Script green and the logo as the page background.    ${white}│"
+  echo -e " │ ${cyan}Adds the PowerUI theme to Fluidd: the ADL Script logo,         ${white}│"
+  echo -e " │ ${cyan}the ADL Script green and the logo as the page background.      ${white}│"
   echo -e " │ ${cyan}It is selected by default. Your other Fluidd themes (including ${white}│"
   echo -e " │ ${cyan}Creality) are kept.                                            ${white}│"
   hr

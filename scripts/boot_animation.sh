@@ -2,7 +2,7 @@
 
 set -e
 
-# Installs the CFS Power Script boot animation once per script installation.
+# Installs the ADL Script boot animation once per script installation.
 # It replaces the frames in /etc/boot-display (played by the Creality
 # boot_display service) and backs up the original animation first.
 # The marker lives in the script folder: a firmware update that restores the

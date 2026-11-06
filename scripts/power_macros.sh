@@ -2,7 +2,7 @@
 
 set -e
 
-# Power Macros: installs the Power Script configuration files and macros.
+# Power Macros: installs the ADL Script configuration files and macros.
 
 # Files replaced by this module (the originals are backed up first).
 POWER_CONFIG_FILES="printer_params.cfg box.cfg gcode_macro.cfg"
@@ -12,7 +12,7 @@ function power_macros_message(){
   title 'Power Macros' "${yellow}"
   inner_line
   hr
-  echo -e " │ ${cyan}Installs the Power Script macros and parameters:               ${white}│"
+  echo -e " │ ${cyan}Installs the ADL Script macros and parameters:                 ${white}│"
   echo -e " │ ${cyan}gcode_macro.cfg, printer_params.cfg and box.cfg, plus the      ${white}│"
   echo -e " │ ${cyan}STRESS_TEST, PID_HOTEND and the camera macros.                 ${white}│"
   hr
@@ -46,7 +46,7 @@ function ensure_printer_include(){
   mv "${PRINTER_CFG}.tmp" "$PRINTER_CFG"
 }
 
-# Copies the Power Script files and sets up the includes. Used by the installation
+# Copies the ADL Script files and sets up the includes. Used by the installation
 # and by the reapply option ($1 is the word used in the final message).
 function apply_power_macros(){
   local done_word="${1:-installed}"

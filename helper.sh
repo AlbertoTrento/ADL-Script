@@ -10,10 +10,10 @@ for script in "${HELPER_SCRIPT_FOLDER}/scripts/menu/K1/"*.sh; do . "${script}"; 
 
 function update_helper_script() {
   echo -e "${white}"
-  echo -e "Info: Updating CFS Power Script..."
+  echo -e "Info: Updating ADL Script..."
   cd "${HELPER_SCRIPT_FOLDER}"
   git reset --hard && git pull
-  ok_msg "CFS Power Script has been updated!"
+  ok_msg "ADL Script has been updated!"
   echo -e "   ${green}Please restart script to load the new version.${white}"
   echo
   exit 0

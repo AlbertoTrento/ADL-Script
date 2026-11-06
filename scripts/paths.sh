@@ -172,7 +172,7 @@ function set_paths() {
   
   # PowerScreen #
   POWERSCREEN_FOLDER="${USR_DATA}/powerscreen"
-  POWERSCREEN_INSTALLER_URL="https://raw.githubusercontent.com/borferkic/K1C-CFS-POWER-SCREEN/main/installer.sh"
+  POWERSCREEN_INSTALLER_URL="https://raw.githubusercontent.com/AlbertoTrento/ADL-Screen/main/installer.sh"
   POWERSCREEN_INSTALLER_TMP="/tmp/powerscreen-installer.sh"
 
   
