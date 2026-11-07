@@ -111,6 +111,8 @@ In `box.cfg`, il caricamento iniziale `Tn_extrude` è **200 mm**, mentre i param
 
 ### Gestire le bobine da Fluidd
 
+La scheda CFS supporta inglese e russo, con selezione RU/EN e preferenza salvata nel browser. Vedi [le lingue della scheda CFS](docs/cfs-languages.md).
+
 Installare il pannello con `[Customize & PowerScreen] → 7`, poi ricaricare Fluidd. La scheda mostra quattro slot, materiale, colore, slot caricato e i dati di quantità residua, umidità e temperatura forniti dal CFS. Si può spostare in una scheda flottante; posizione e stato sono conservati nel browser.
 
 Fare clic su una bobina per modificarne materiale e colore. **REFRESH SLOTS** richiede al firmware di rileggere gli slot e comporta piccoli movimenti del filamento. Modifica e aggiornamento non sono disponibili durante una stampa o una pausa. Il pannello comunica con Moonraker e non richiede il server web Creality.
