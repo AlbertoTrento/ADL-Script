@@ -86,8 +86,7 @@ Guilouz, adapted to the K1C and to the CFS firmware.
   <img src="docs/images/boot-animation.gif" alt="ADL Script boot animation" width="480" />
 </p>
 
-A lightning bolt strikes the Creality logo and, in a flash, the ADL Script logo appears. "POWER" assembles
-letter by letter, the bolt glows twice, "SCRIPT" is typed and "LOADING..." cycles its dots at the top right for a couple of seconds. The whole animation lasts about 7 seconds.
+A red light grows over the Creality logo and melts it in a flash; the metal ADL logo comes out of the light, a reflection runs over it and ALBERTO DEV LABS rises below. While the printer starts, the red glow pulses and AVVIO... cycles its dots. About 5 seconds, then the wait loop.
 
 ## Screenshots
 
