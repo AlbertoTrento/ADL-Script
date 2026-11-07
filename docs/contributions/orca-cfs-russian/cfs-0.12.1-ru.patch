@@ -1,0 +1,260 @@
+--- a/cfs.py
++++ b/cfs.py
+@@ -53,5 +53,5 @@
+     "interval_seconds": 15,
+     "lingua": "",
+-    "lingue_possibili": "it, en, de, fr, es (vuoto = lingua di Orca)",
++    "lingue_possibili": "it, en, de, fr, es, ru (vuoto = lingua di Orca)",
+     "nome_ams": "CFS",
+     "caricati": [],
+@@ -712,4 +712,27 @@
+         "Successfully synchronized color and type of filament from printer.": "Done: spool colours and profiles are in the project.",
+     },
++    "ru": {
++        "Synchronize AMS Filament Information": "Перенести катушки {nome} в проект",
++        "Synchronize Filament Information": "Перенести катушки в проект",
++        "Synchronize filament list from AMS": "Перенести катушки {nome} в проект",
++        "Mapping": "Выбрать вручную",
++        "Overwriting": "По порядку",
++        "Sync_AMS\u0004Original": "Сейчас",
++        "After mapping": "После",
++        "After overwriting": "После",
++        "Only synchronize filament type and color, not including AMS slot information.": "Для каждого номера филамента в проекте выберите катушку {nome}.",
++        "Only synchronize filament type and color, not including slot information.": "Для каждого номера филамента в проекте выберите катушку.",
++        "Replace the project filaments list sequentially based on printer filaments. And unused printer filaments will be automatically added to the end of the list.": "Филамент 1 получит первую катушку, филамент 2 — вторую и так далее.",
++        "Add unused AMS filaments to filaments list.": "Добавить в список также катушки, которые проект не использует",
++        "Add unused filaments to filaments list.": "Добавить в список также катушки, которые проект не использует",
++        "Automatically merge the same colors in the model after mapping.": "Если два номера используют одну катушку, объединить их в один",
++        "After being synced, the project's filament presets and colors will be replaced with the mapped filament types and colors. This action cannot be undone.": "После подтверждения материалы проекта будут заменены выбранными катушками. Отменить это действие нельзя.",
++        "After being synced, this action cannot be undone.": "После подтверждения материалы проекта будут заменены катушками. Отменить это действие нельзя.",
++        "Are you sure to synchronize the filaments?": "Продолжить?",
++        "Reset all filament mapping": "Сбросить все назначения",
++        "Reset current filament mapping": "Сбросить это назначение",
++        "Synchronizing AMS filaments will discard your modified but unsaved filament presets.\nAre you sure you want to continue?": "Несохранённые изменения профилей филамента будут потеряны.\nПродолжить?",
++        "Successfully synchronized color and type of filament from printer.": "Готово: цвета и профили катушек перенесены в проект."
++    },
+ }
+
+@@ -887,5 +910,5 @@
+             break
+     codice = codice[:2].lower()
+-    return codice if codice in ("it", "en", "de", "fr", "es") else "en"
++    return codice if codice in ("it", "en", "de", "fr", "es", "ru") else "en"
+
+
+@@ -1048,5 +1071,5 @@
+         if self.guida is not None and self.guida.is_open():
+             return
+-        lingua = "it" if self._stato_per_pannello()["lingua"] == "it" else "en"
++        lingua = self._stato_per_pannello()["lingua"] if self._stato_per_pannello()["lingua"] in ("it", "ru") else "en"
+         testo = GUIDE[lingua].replace("{{IMMAGINE}}", f'<img src="{IMMAGINE_PULSANTI}" alt="">')
+         larghezza, altezza = misura_finestra()
+@@ -1105,5 +1128,5 @@
+                 return
+             elif comando == "salva":
+-                lingua = dati.get("lingua") if dati.get("lingua") in ("it", "en", "de", "fr", "es") else ""
++                lingua = dati.get("lingua") if dati.get("lingua") in ("it", "en", "de", "fr", "es", "ru") else ""
+                 self._salva(lingua=lingua, interval_seconds=max(5, int(dati.get("intervallo") or 15)))
+                 esito = "salvato"
+@@ -1118,5 +1141,5 @@
+
+     def _lingua_finestre(self):
+-        return "it" if self._stato_per_pannello()["lingua"] == "it" else "en"
++        return self._stato_per_pannello()["lingua"] if self._stato_per_pannello()["lingua"] in ("it", "ru") else "en"
+
+     def _apri_stampante(self):
+@@ -1170,5 +1193,5 @@
+         return dict(self._stato, comando="stato", versione=VERSIONE, da_caricare=len(self._carica["mancano"]) if manca else 0,
+                     host=(self._host or normalize_host(impostazioni["host"])).replace("http://", ""),
+-                    lingua=impostazioni.get("lingua") if impostazioni.get("lingua") in ("it", "en", "de", "fr", "es") else lingua_orca())
++                    lingua=impostazioni.get("lingua") if impostazioni.get("lingua") in ("it", "en", "de", "fr", "es", "ru") else lingua_orca())
+
+     def on_load(self):
+@@ -1311,5 +1334,17 @@
+     es: { senza_stampante: "Sin impresora: pon su dirección en Impresora → Conexión.", non_raggiungibile: "Impresora no accesible ({host}). ¿Está encendida?",
+           senza_cfs: "Conectada, pero el CFS no responde.", attesa: "Leyendo el CFS…", unita: "CFS {n}", vuoto: "vacío", avviso: "{n} filamentos para cargar en la impresora: haz clic aquí.",
+-          guida: "Guía y ajustes", ricarica: "Sincronizar", ricarica_aiuto: "Sincronizar: lleva a Orca los colores y perfiles de las bobinas del CFS, en orden (1A = filamento 1)." }
++          guida: "Guía y ajustes", ricarica: "Sincronizar", ricarica_aiuto: "Sincronizar: lleva a Orca los colores y perfiles de las bobinas del CFS, en orden (1A = filamento 1)." },
++    ru: {
++      "senza_stampante": "Принтер не выбран: укажите адрес в разделе «Принтер → Подключение».",
++      "non_raggiungibile": "Принтер недоступен ({host}). Он включён?",
++      "senza_cfs": "Принтер подключён, но CFS не отвечает.",
++      "attesa": "Чтение данных CFS…",
++      "unita": "CFS {n}",
++      "vuoto": "пусто",
++      "avviso": "Нужно добавить материалы в принтер: {n}. Нажмите здесь.",
++      "guida": "Справка и настройки",
++      "ricarica": "Синхронизировать",
++      "ricarica_aiuto": "Синхронизировать: перенести цвета и профили катушек CFS в Orca по порядку (1A = филамент 1)."
++    }
+   };
+   var lingua = "it";
+@@ -1377,5 +1412,5 @@
+
+
+-TITOLI_GUIDA = {"it": "CFS - Guida e impostazioni", "en": "CFS - Guide and settings"}
++TITOLI_GUIDA = {"it": "CFS - Guida e impostazioni", "en": "CFS - Guide and settings", "ru": "CFS — Справка и настройки"}
+
+ GUIDE = {
+@@ -1468,4 +1503,48 @@
+ </div>
+ """,
++    "ru": """
++<div>
++<h1>Плагин CFS</h1>
++<p>Переносит катушки Creality CFS в OrcaSlicer. Проверено на <b>Creality K1C с CFS и root-доступом, прошивка 2.3.5.34</b>, с OrcaSlicer 2.5 для Windows.</p>
++<h2>Первоначальная настройка</h2>
++<ol>
++<li>В настройках подключения принтера укажите адрес, например <code>192.168.1.50:4408</code>.</li>
++<li>В разделе <b>Настройки → Разработчик</b> включите <b>«Использовать агенты печати вместо хостов печати»</b>.</li>
++<li>В профиле принтера выберите агент <b>Moonraker</b> и сохраните профиль.</li>
++<li>Orca запросит разрешение на доступ к сети и запуск потока: ответьте <b>Да</b>. Выбор будет сохранён.</li>
++</ol>
++<h2>Перенос катушек в Orca</h2>
++<ol>
++<li>Убедитесь, что выбран <b>ваш</b> профиль принтера.</li>
++<li>На панели нажмите <b>Синхронизировать</b> — кнопку со стрелками.</li>
++</ol>
++<p>Плагин всё сделает автоматически, даже если на столе есть детали: филамент 1 получит катушку 1A, филамент 2 — 1B и так далее, с цветом и профилем. Назначенные деталям номера сохранятся.</p>
++{{IMMAGINE}}
++<p>На изображении: <b>зелёная ✓</b> — кнопка <b>Синхронизировать</b> на панели, которую нужно нажать; <b>красный ✗</b> — стрелки в строке «Принтер», которые нажимать <b>не нужно</b>.</p>
++<p class="attenzione"><b>✗ НЕ нажимайте круглые стрелки в строке «Принтер».</b> Они заменяют ваш профиль принтера системным, и материалы проекта исчезают. Если это произошло, снова выберите свой профиль.</p>
++</div>
++<div>
++<h2>Изменение материала детали</h2>
++<p>Выберите деталь на столе и <b>нажмите на катушку на панели</b>. Или нажмите номер филамента на клавиатуре, либо выберите в контекстном меню <b>Изменить филамент</b>.</p>
++<h2>Зелёная кнопка Orca</h2>
++<p>Она делает то же самое, но при наличии деталей на столе открывает окно, где можно выбрать катушку для каждого номера. Это полезно для скачанного файла, раскрашенного другим автором.</p>
++<ul>
++<li><b>Выбрать вручную</b> (Сопоставление): выберите катушку для каждого номера.</li>
++<li><b>По порядку</b> (Перезапись): 1 = первая катушка, 2 = вторая.</li>
++<li><b>Добавить неиспользуемые катушки:</b> в списке будут все катушки. Оставьте включённым.</li>
++<li><b>Объединить:</b> если два номера используют одну катушку, они станут одним.</li>
++</ul>
++<h2>Материалы в принтере</h2>
++<p>K1C печатает только материалами, которые есть в её базе данных. Ваши профили и материалы других марок плагин добавляет автоматически с помощью <b>ADL Script</b>, без пароля. Без ADL Script их нужно добавить вручную через SSH: для безопасности пароль root не хранится в плагине. Достаточно выбрать свой профиль в одном из слотов филамента — через несколько секунд он появится в принтере. Окно <b>Материалы в принтере</b> (шестерёнка) показывает статус и порядок действий.</p>
++<h2>Остаток филамента</h2>
++<p>Рядом с названием катушки отображается остаток в метрах по данным CFS. Для ещё не измеренной катушки указывается 100 м.</p>
++<h2>Сохранение положения панели</h2>
++<p>Перетащите панель в удобное место, например в левый верхний угол над разделом «Принтер», затем один раз выберите <b>Файл → Новый проект</b>: Orca сохраняет положение только в этот момент.</p>
++<h2>Вопросы</h2>
++<p><b>Нужно ли сохранять материалы как профиль?</b> Нет. Orca использует уже имеющиеся профили, а цвета сохраняются вместе с проектом.</p>
++<p><b>Почему катушка отображается как Generic?</b> Катушка не от Creality или для неё нет профиля в Orca: тогда Orca выбирает профиль по типу материала.</p>
++<p><b>«Принтер не подключён».</b> Проверьте профиль и агент Moonraker, затем подождите полминуты после запуска Orca.</p>
++</div>
++""",
+ }
+
+@@ -1515,5 +1594,5 @@
+   <label for="lingua" id="t_lingua"></label>
+   <select id="lingua"><option value="" id="t_auto"></option><option value="it">Italiano</option><option value="en">English</option>
+-    <option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option></select>
++    <option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option><option value="ru">Русский</option></select>
+   <label for="intervallo" id="t_intervallo"></label>
+   <input id="intervallo" type="number" min="5" max="300">
+@@ -1538,5 +1617,35 @@
+           adl_ignoto: "Printer not read yet.", caricati: "In the printer: ", mancano: "To load: ", errore: "Error: ",
+           applica: "Apply", ripristina: "Restore", lingua: "Plugin language", auto: "Same as Orca", intervallo: "CFS reading (seconds)", salva: "Save",
+-          applicato: "Orca's texts use the chosen name.", originale: "Orca uses its original texts.", attesa: "Confirm the Windows request…", negato: "Permission not given: nothing changed.", salvato: "Saved." }
++          applicato: "Orca's texts use the chosen name.", originale: "Orca uses its original texts.", attesa: "Confirm the Windows request…", negato: "Permission not given: nothing changed.", salvato: "Saved." },
++    ru: {
++      "titolo": "Настройки",
++      "nome": "Название вместо AMS",
++      "nota": "Заменяет AMS во всех текстах Orca и делает окно синхронизации понятнее. Windows запросит разрешение. После обновления Orca настройку нужно применить заново.",
++      "riavvio": "Нужен перезапуск",
++      "riavvio_nota": "Новые тексты появятся в Orca после перезапуска.",
++      "riavvia": "Перезапустить Orca",
++      "stampa": "Материалы в принтере",
++      "apri_stampante": "Открыть «Материалы в принтере»",
++      "adl_guida": "Страница ADL Script",
++      "adl_indirizzo": "ADL Script: albertodevlabs.it/en/software/adl-script",
++      "adl_si": "ADL Script найден: материалы проекта добавляются в принтер автоматически.",
++      "adl_no": "ADL Script не найден: откройте окно ниже, чтобы добавить материалы.",
++      "adl_ignoto": "Данные принтера ещё не прочитаны.",
++      "caricati": "В принтере: ",
++      "mancano": "Нужно добавить: ",
++      "errore": "Ошибка: ",
++      "applica": "Применить",
++      "ripristina": "Восстановить",
++      "lingua": "Язык плагина",
++      "auto": "Как в Orca",
++      "intervallo": "Опрос CFS (секунды)",
++      "salva": "Сохранить",
++      "applicato": "В текстах Orca используется выбранное название.",
++      "originale": "В Orca используются исходные тексты.",
++      "attesa": "Подтвердите запрос Windows…",
++      "negato": "Разрешение не получено: изменений нет.",
++      "salvato": "Сохранено.",
++      "nessuna_risposta": "Нет ответа от ADL Script"
++    }
+   };
+   var testi = TESTI["{{LINGUA}}"];
+@@ -1569,5 +1678,5 @@
+       if (st.caricati && st.caricati.length) righe.push(testi.caricati + st.caricati.map(function (c) { return c.split("|").join(" "); }).join(", "));
+       if (st.mancano && st.mancano.length) righe.push(testi.mancano + st.mancano.join(", "));
+-      if (st.errore) righe.push(testi.errore + st.errore);
++      if (st.errore) righe.push(testi.errore + (st.errore === "nessuna risposta da ADL Script" && testi.nessuna_risposta ? testi.nessuna_risposta : st.errore));
+       el("stato_stampa").textContent = righe.join("\n");
+       el("stato_stampa").style.whiteSpace = "pre-line";
+@@ -1601,5 +1710,5 @@
+
+
+-TITOLI_STAMPANTE = {"it": "CFS - Filamenti nella stampante", "en": "CFS - Filaments in the printer"}
++TITOLI_STAMPANTE = {"it": "CFS - Filamenti nella stampante", "en": "CFS - Filaments in the printer", "ru": "CFS — Материалы в принтере"}
+
+ PAGINA_STAMPANTE = r"""
+@@ -1689,5 +1798,46 @@
+           ssh_nota: "For safety we chose not to put the root password into the plugin: the plugin never logs into the printer with a password.",
+           avviato: "Loading started…", fatto: "Done.", negato: "Not done: see the status above.",
+-          dopo: "After loading: for a spool without a tag, choose the new filament on the printer screen or in Fluidd's CFS card (brand and name from the “Name in the printer” column)." }
++          dopo: "After loading: for a spool without a tag, choose the new filament on the printer screen or in Fluidd's CFS card (brand and name from the “Name in the printer” column)." },
++    ru: {
++      "titolo": "Материалы в принтере",
++      "intro": "K1C печатает только материалами, которые есть в её базе данных. Они же отображаются на экране принтера и в карточке CFS во Fluidd. Катушки Creality с меткой уже известны принтеру, а ваши профили Orca и материалы других марок — ещё нет. Пока их нет в базе, печать не начнётся. Здесь плагин добавляет их по данным профиля Orca.",
++      "passi_titolo": "Как добавить материалы в принтер",
++      "passi": [
++        "В Orca в строке «Филамент» выберите для одного из слотов нужный материал: ваш сохранённый профиль или профиль другой марки.",
++        "Плагин заметит его и за несколько секунд добавит в принтер. Ниже появится статус «✓ В принтере». Чтобы не ждать, нажмите «Добавить сейчас».",
++        "Если у катушки нет RFID-метки, выберите для неё добавленный материал на экране принтера или в карточке CFS во Fluidd. Марка и название указаны в столбце «Название в принтере».",
++        "Катушки Creality с меткой добавлять не нужно: принтер уже знает их."
++      ],
++      "progetto": "Материалы проекта для добавления в принтер",
++      "nessuno": "В проекте используются только материалы, уже известные принтеру: добавлять нечего. Выберите свой профиль в одном из слотов филамента, и он появится здесь.",
++      "colonne": [
++        "",
++        "Название в принтере",
++        "Профиль Orca",
++        "Материал",
++        "Сопло",
++        "Статус"
++      ],
++      "ok": "✓ В принтере",
++      "attesa": "Нужно добавить",
++      "errore": "✗ ",
++      "come": "Способ добавления",
++      "ignoto": "Проверка принтера. Если сообщение не меняется, убедитесь, что принтер включён и в настройках подключения указан верный адрес.",
++      "adl_si": "ADL Script установлен на принтере: материалы добавляются автоматически, как только вы используете их в проекте. Пароль не нужен. Дополнительных действий не требуется.",
++      "carica": "Добавить сейчас",
++      "adl_titolo": "Рекомендуется: ADL Script",
++      "adl_testo": "Установите на принтер ADL Script с модулем «CFS Custom Filaments». Материалы будут добавляться автоматически, без пароля, и сохранятся после обновления прошивки.",
++      "adl_link": "Страница ADL Script",
++      "adl_indirizzo": "albertodevlabs.it/en/software/adl-script",
++      "link": "Браузер не открылся: откройте адрес под кнопкой вручную.",
++      "ssh_titolo": "Другой способ: вручную через SSH",
++      "ssh_testo": "Материалы можно добавить в базу принтера вручную через SSH, используя данные таблицы выше: марку, название, материал, температуры и цвет.",
++      "ssh_nota": "Для безопасности пароль root не хранится в плагине: плагин никогда не входит в принтер по паролю.",
++      "avviato": "Добавление начато…",
++      "fatto": "Готово.",
++      "negato": "Не удалось: см. статус выше.",
++      "dopo": "После добавления: для катушки без метки выберите новый материал на экране принтера или в карточке CFS во Fluidd. Марка и название указаны в столбце «Название в принтере».",
++      "nessuna_risposta": "Нет ответа от ADL Script"
++    }
+   };
+   var testi = TESTI["{{LINGUA}}"];
+@@ -1709,5 +1859,5 @@
+       f.map(function (x) {
+         var stato = x.stato === "ok" ? "<span class=\"ok\">" + h(testi.ok) + "</span>" :
+-                    x.stato === "errore" ? "<span class=\"errore\">" + h(testi.errore + x.errore) + "</span>" :
++                    x.stato === "errore" ? "<span class=\"errore\">" + h(testi.errore + (x.errore === "nessuna risposta da ADL Script" && testi.nessuna_risposta ? testi.nessuna_risposta : x.errore)) + "</span>" :
+                     "<span class=\"attesa\">" + h(testi.attesa) + "</span>";
+         return "<tr><td><span class=\"colore\" style=\"background:#" + h(x.colore) + "\"></span></td><td><b>" + h(x.marca + " " + x.nome) + "</b></td><td>" +
