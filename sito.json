@@ -1,0 +1,20 @@
+{
+  "nome": "ADL_Script",
+  "categoria": "",
+  "sottotitolo": "",
+  "stato_sviluppo": "",
+  "tipo_distribuzione": "",
+  "formato_installer": "",
+  "tag": [],
+  "feature": [],
+  "requisiti": [],
+  "documentazione": "",
+  "copertina": "images/cover.png",
+  "screenshot": [
+    "images/screenshots/01.png"
+  ],
+  "prezzo": "",
+  "link_acquisto": "",
+  "link_download": "",
+  "visibilita": ""
+}

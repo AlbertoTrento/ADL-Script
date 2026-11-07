@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "approved_at": 1794065087,
+  "order": [
+    "01.png"
+  ],
+  "cover": "images/cover.png",
+  "hashes": {
+    "images/cover.png": "5eca4cccb7dca7e96dfec6288c1a6ac67c71b19630fe18e98b494cb26024c835",
+    "images/screenshots/01.png": "5eca4cccb7dca7e96dfec6288c1a6ac67c71b19630fe18e98b494cb26024c835"
+  }
+}
