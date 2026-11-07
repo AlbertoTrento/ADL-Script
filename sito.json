@@ -66,7 +66,7 @@
   ],
   "formato_installer": "Script shell con menu interattivo via SSH",
   "link_acquisto": "",
-  "link_download": "",
+  "link_download": "https://github.com/AlbertoTrento/ADL-Script#installazione",
   "nome": "ADL_Script",
   "prezzo": "",
   "requisiti": [
