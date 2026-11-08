@@ -182,14 +182,27 @@ function migrate_fluidd_power_theme_to_adl(){
   fi
 }
 
-# A Fluidd update replaces config.json and the ADL theme disappears.
-# Add the preset back (the selected theme is not changed).
+# A Fluidd update replaces config.json and the ADL theme disappears: add the preset back.
+# Se nel repo cambiano il logo o il colore del tema ADL, li porta anche su Fluidd: ricopia il logo,
+# aggiorna il preset e, se il tema in uso e' ADL con un altro colore, gli mette quello nuovo.
 function migrate_fluidd_power_theme(){
   [ -f "$FLUIDD_THEME_LOGO_FILE" ] || return 0
   [ -f "$FLUIDD_FOLDER/config.json" ] || return 0
-  if ! jq -e '[.themePresets[]? | select(.name == "ADL")] | length > 0' "$FLUIDD_FOLDER/config.json" > /dev/null 2>&1; then
+  local current
+  if [ -f "$FLUIDD_THEME_LOGO_URL" ] && ! cmp -s "$FLUIDD_THEME_LOGO_URL" "$FLUIDD_THEME_LOGO_FILE"; then
+    echo -e "${white}Info: Updating the ADL logo for Fluidd..."
+    copy_power_script_theme_files
+  fi
+  if ! jq -e --arg c "$POWER_THEME_COLOR" '[.themePresets[]? | select(.name == "ADL" and .color == $c)] | length > 0' "$FLUIDD_FOLDER/config.json" > /dev/null 2>&1; then
     echo -e "${white}Info: Adding the ADL theme to the Fluidd config.json file..."
     add_power_script_theme_preset || true
+  fi
+  current=$("$CURL" -s "localhost:7125/server/database/item?namespace=fluidd&key=uiSettings.theme" 2>/dev/null | jq -c '.result.value // empty' 2>/dev/null) || return 0
+  [ -n "$current" ] || return 0
+  if [ "$(echo "$current" | jq -r '.logo.src // ""')" = "logo_adl.svg" ] && \
+     [ "$(echo "$current" | jq -r '.color // ""')" != "$POWER_THEME_COLOR" ]; then
+    echo -e "Info: Updating the color of the selected ADL theme..."
+    select_power_script_theme || true
   fi
 }
 

@@ -16,7 +16,7 @@ function remove_menu_ui_k1() {
   menu_option ' 4' 'Remove' 'Entware'
   menu_option ' 5' 'Remove' 'Klipper Gcode Shell Command'
   hr
-  subtitle '•POWER SCRIPT:'
+  subtitle '•ADL SCRIPT:'
   menu_option ' 6' 'Remove' 'Power Macros'
   menu_option ' 7' 'Remove' 'Bed Coordinates Fix'
   hr

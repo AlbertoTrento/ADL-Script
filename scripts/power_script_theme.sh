@@ -2,12 +2,12 @@
 
 set -e
 
-# Rosso ADL, lo stesso del bordo del logo (colore principale del tema).
-POWER_THEME_COLOR="#E10600"
+# Rosso ADL smorzato (colore principale del tema): il rosso del bordo del logo, #E10600, era troppo acceso.
+POWER_THEME_COLOR="#B33A3A"
 
 # Theme preset added to the Fluidd config.json (the file is merged, not replaced,
 # so the presets of the installed Fluidd version and the Creality one are kept).
-POWER_THEME_PRESETS='[{"name":"ADL","color":"#E10600","isDark":true,"logo":{"src":"logo_adl.svg"}}]'
+POWER_THEME_PRESETS='[{"name":"ADL","color":"#B33A3A","isDark":true,"logo":{"src":"logo_adl.svg"}}]'
 
 function power_script_theme_message(){
   top_line

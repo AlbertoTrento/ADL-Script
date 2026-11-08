@@ -35,7 +35,7 @@ function info_menu_ui_k1() {
   info_line "$(check_file_k1 "$ENTWARE_FILE")" 'Entware'
   info_line "$(check_file_k1 "$KLIPPER_SHELL_FILE")" 'Klipper Gcode Shell Command'
   hr
-  subtitle '•POWER SCRIPT:'
+  subtitle '•ADL SCRIPT:'
   info_line "$(check_file_k1 "$POWER_CONFIG_BACKUP_FOLDER/gcode_macro.cfg")" 'Power Macros'
   info_line "$(check_file_k1 "$BED_FIX_BACKUP_FOLDER/stepper_y.orig")" 'Bed Coordinates Fix'
   hr

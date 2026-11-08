@@ -16,7 +16,7 @@ function install_menu_ui_k1() {
   menu_option ' 4' 'Install' 'Entware'
   menu_option ' 5' 'Install' 'Klipper Gcode Shell Command'
   hr
-  subtitle '•POWER SCRIPT:'
+  subtitle '•ADL SCRIPT:'
   menu_option ' 6' 'Install' 'Power Macros'
   menu_option ' 7' 'Install' 'Bed Coordinates Fix'
   hr

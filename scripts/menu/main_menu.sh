@@ -37,8 +37,9 @@ function script_title() {
 
 function main_menu_ui() {
   top_line
-  title "• CFS POWER SCRIPT FOR CREALITY $(script_title) •" "${blue}"
-  title "Copyright © Boris Fernandez (Boris SdK)" "${white}"
+  title "• ADL SCRIPT FOR CREALITY $(script_title) •" "${blue}"
+  # Avviso di copyright richiesto dalla GPL v3: l'originale e' di Boris Fernandez.
+  title "Based on CFS Power Script © Boris Fernandez - GPL v3" "${white}"
   inner_line
   title "/!\\ ONLY USE THIS SCRIPT WITH LATEST FIRMWARE VERSION /!\\" "${darkred}"
   inner_line
