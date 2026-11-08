@@ -217,6 +217,8 @@ function migrate_fluidd_cfs_panel(){
     echo -e "${white}Info: Updating the CFS panel for Fluidd..."
     cp "$FLUIDD_CFS_PANEL_URL" "$FLUIDD_CFS_PANEL_FILE"
   fi
+  # Pannello leggibile dal server web di Fluidd, altrimenti sparisce (errore 403).
+  chmod 644 "$FLUIDD_CFS_PANEL_FILE"
   if ! grep -q "POWER_CFS_PANEL_START" "$FLUIDD_FOLDER/index.html"; then
     echo -e "${white}Info: Adding the CFS panel to the Fluidd page..."
     add_cfs_panel_tag || true
