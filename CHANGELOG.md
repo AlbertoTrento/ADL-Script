@@ -2,6 +2,22 @@
 
 All notable changes to the CFS Power Script. Each release on GitHub carries the entry of its version.
 
+## v1.4.0
+
+Prima versione di **ADL Script**, la versione di AlbertoTrento del CFS Power Script.
+
+### Nuovo
+- **Nome ADL Script.** Menu "ADL SCRIPT FOR CREALITY K1C" con il credito a Boris Fernandez (GPL v3), aggiornamenti da `AlbertoTrento/ADL-Script`, voce di Moonraker/Fluidd `ADL-Script` (le installazioni con il vecchio nome `CFS-Power-Script` vengono rinominate all'avvio dello script) e ADL Screen installato da `AlbertoTrento/ADL-Screen`.
+- **Tema ADL per Fluidd** al posto di PowerUI: logo ADL argento e rosso in alto e sullo sfondo, colore rosso `#B33A3A`. Chi aveva PowerUI passa ad ADL all'avvio dello script.
+- **Animazione di avvio ADL:** lampo rosso, logo ADL e scritta Alberto Dev Labs.
+- **Pannello CFS di Fluidd in italiano e in inglese,** compresa la finestra Diagnostica CFS: segue la lingua scelta in Fluidd.
+- **Bobina esterna:** con il CFS escluso, all'avvio stampa il filamento infilato a mano viene portato all'ugello e spurgato con i comandi del firmware CFS; a fine stampa niente `BOX_END`.
+- **Numero di versione nel menu** con le modifiche dopo l'ultima versione (`v1.4.0-1`, `v1.4.0-2`...).
+
+### Corretto
+- **KAMP:** pulizia ugello con le temperature di stampa, senza aspettare che il piatto si raffreddi; dopo il caricamento del CFS l'ugello torna alla temperatura di stampa prima dello spurgo.
+- **Pannello CFS di Fluidd:** riconosce gli id materiale a 6 cifre con l'1 davanti (`106003` invece di `06003`).
+
 ## v1.3.9
 
 ### Fixed

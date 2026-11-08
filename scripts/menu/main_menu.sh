@@ -19,7 +19,9 @@ fi
 function get_script_version() {
   local version
   cd "${HELPER_SCRIPT_FOLDER}"
-  version="$(git describe HEAD --always --tags | sed 's/-.*//')"
+  # Versione e numero di modifiche dopo l'ultima etichetta (v1.4.0, v1.4.0-1, v1.4.0-2...): ogni aggiornamento
+  # cambia il numero. Si toglie solo la parte "-g<hash>" del commit.
+  version="$(git describe HEAD --always --tags | sed 's/-g[0-9a-f]*$//')"
   echo "${cyan}${version}${white}"
 }
 
