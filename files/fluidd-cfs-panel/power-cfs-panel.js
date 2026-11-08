@@ -1,5 +1,5 @@
 /*
- * PowerUI CFS card for Fluidd.
+ * ADL Script CFS card for Fluidd (scritte in italiano o in inglese, secondo la lingua di Fluidd).
  *
  * A card with the look of the Fluidd dashboard cards that shows the four slots of the CFS (a
  * spool in the real color, the material, the remaining filament and the loaded slot) and the
@@ -108,7 +108,117 @@
     close: "M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
   };
 
+  // ---------- Lingua ----------
+  // Le scritte seguono la lingua scelta in Fluidd (Impostazioni > Generale > Lingua): italiano se e' italiano,
+  // altrimenti inglese. {0}, {1} sono i valori inseriti da t().
+  var TESTI = {
+    en: {
+      empty: "Empty", notSet: "Not set", materialId: "Material {0}", moonrakerHttp: "Moonraker answered HTTP {0}",
+      undock: "Undock", dock: "Dock to the dashboard", collapse: "Collapse", expand: "Expand",
+      channel: "Channel {0}", editSpool: "Edit this spool", disconnected: "CFS disconnected.",
+      humidity: "Humidity {0}%", temperature: "Temperature {0}°C",
+      refreshPrinting: "Refresh is not available while printing.",
+      refreshRunning: "The CFS is checking every slot: it moves the filament a little.",
+      refreshing: "REFRESHING...", refreshSlots: "REFRESH SLOTS",
+      refreshTitle: "Check every slot again (spool present and RFID tag), like the Refresh button of the printer screen",
+      refreshFailed: "The refresh could not be sent.", diagButton: "CFS DIAGNOSTICS",
+      close: "Close", brand: "Brand", material: "Material", filament: "Filament", nozzle: "Nozzle", color: "Color",
+      newFilament: "New filament", deleteFilament: "Delete this filament",
+      printingNoEdit: "A print is in progress: the spools cannot be edited now.",
+      cancel: "Cancel", save: "Save",
+      confirmDelete: "Delete {0} from the database?\nThe spools that use it will show as an unknown material.",
+      deleting: "Deleting...", noRemovalConfirm: "The printer did not confirm the removal.",
+      removalFailed: "The removal could not be sent.", saved: "Saved.",
+      notReported: "The CFS has not reported the change yet. Check the card in a few seconds.",
+      readFailed: "Could not read the CFS.", saving: "Saving...", changeFailed: "The change could not be sent.",
+      hintBase: "Pick the filament it looks like: the new one starts as a copy of it.",
+      basedOn: "Based on", name: "Name", temp: "Temp (°C)", min: "Min", max: "Max", back: "Back", add: "Add",
+      brandInvalid: "The brand needs letters, digits, spaces and . _ + - (24 characters at most).",
+      nameInvalid: "The name needs letters, digits, spaces and . _ + - (24 characters at most).",
+      tempsWhole: "The temperatures must be whole numbers between 150 and 350.",
+      tempsOrder: "The temperatures must satisfy Min <= Nozzle <= Max.",
+      exists: "{0} already exists.", adding: "Adding...",
+      printingNoDb: "A print is in progress: the database cannot be changed now.",
+      noNewConfirm: "The printer did not confirm the new filament.", addFailed: "The filament could not be added.",
+      diagTitle: "CFS Diagnostics", deleteLog: "Delete log", previousLog: "Previous log", downloadLog: "Download log",
+      working: "Working...", done: "Done.", noChangeConfirm: "The printer did not confirm the change.",
+      changeNotMade: "The change could not be made.",
+      stateUnreadable: "The state of the service could not be read.",
+      stateMissing: "The service has not written its state yet: press Start.",
+      logSize: "Log size: {0}", events: "Disconnections recorded: {0}", cfsState: "CFS: {0}",
+      boxConnect: "connected", boxDisconnect: "disconnected",
+      service: "Service", running: "Running", stopped: "Stopped: not logging and not recovering",
+      log: "Log", on: "On", off: "Off", logOff: "Off: still watching and recovering",
+      usbRecovery: "USB auto-recovery", start: "Start", stop: "Stop", turnOn: "Turn on", turnOff: "Turn off",
+      confirmClean: "Delete the CFS Diagnostics log and its summary? This cannot be undone.",
+      reading: "Reading..."
+    },
+    it: {
+      empty: "Vuoto", notSet: "Non impostato", materialId: "Materiale {0}", moonrakerHttp: "Moonraker ha risposto HTTP {0}",
+      undock: "Sgancia", dock: "Aggancia alla dashboard", collapse: "Riduci", expand: "Espandi",
+      channel: "Canale {0}", editSpool: "Modifica questa bobina", disconnected: "CFS scollegato.",
+      humidity: "Umidità {0}%", temperature: "Temperatura {0}°C",
+      refreshPrinting: "Durante la stampa gli slot non si possono ricontrollare.",
+      refreshRunning: "Il CFS sta controllando tutti gli slot: muove un po' il filamento.",
+      refreshing: "CONTROLLO IN CORSO...", refreshSlots: "AGGIORNA SLOT",
+      refreshTitle: "Ricontrolla tutti gli slot (bobina presente e chip RFID), come il pulsante Aggiorna dello schermo della stampante",
+      refreshFailed: "Non è stato possibile inviare il controllo degli slot.", diagButton: "DIAGNOSTICA CFS",
+      close: "Chiudi", brand: "Marca", material: "Materiale", filament: "Filamento", nozzle: "Ugello", color: "Colore",
+      newFilament: "Nuovo filamento", deleteFilament: "Elimina questo filamento",
+      printingNoEdit: "Stampa in corso: adesso le bobine non si possono modificare.",
+      cancel: "Annulla", save: "Salva",
+      confirmDelete: "Eliminare {0} dal database?\nLe bobine che lo usano risulteranno con un materiale sconosciuto.",
+      deleting: "Eliminazione...", noRemovalConfirm: "La stampante non ha confermato l'eliminazione.",
+      removalFailed: "Non è stato possibile inviare l'eliminazione.", saved: "Salvato.",
+      notReported: "Il CFS non ha ancora segnalato la modifica. Ricontrolla la scheda fra qualche secondo.",
+      readFailed: "Non è stato possibile leggere il CFS.", saving: "Salvataggio...",
+      changeFailed: "Non è stato possibile inviare la modifica.",
+      hintBase: "Scegli il filamento a cui assomiglia: quello nuovo parte come una sua copia.",
+      basedOn: "Basato su", name: "Nome", temp: "Temp (°C)", min: "Min", max: "Max", back: "Indietro", add: "Aggiungi",
+      brandInvalid: "La marca può avere lettere, numeri, spazi e . _ + - (al massimo 24 caratteri).",
+      nameInvalid: "Il nome può avere lettere, numeri, spazi e . _ + - (al massimo 24 caratteri).",
+      tempsWhole: "Le temperature devono essere numeri interi tra 150 e 350.",
+      tempsOrder: "Le temperature devono rispettare Min <= Ugello <= Max.",
+      exists: "{0} esiste già.", adding: "Aggiunta...",
+      printingNoDb: "Stampa in corso: adesso il database non si può modificare.",
+      noNewConfirm: "La stampante non ha confermato il nuovo filamento.",
+      addFailed: "Non è stato possibile aggiungere il filamento.",
+      diagTitle: "Diagnostica CFS", deleteLog: "Elimina registro", previousLog: "Registro precedente",
+      downloadLog: "Scarica registro",
+      working: "In corso...", done: "Fatto.", noChangeConfirm: "La stampante non ha confermato la modifica.",
+      changeNotMade: "Non è stato possibile fare la modifica.",
+      stateUnreadable: "Non è stato possibile leggere lo stato del servizio.",
+      stateMissing: "Il servizio non ha ancora scritto il suo stato: premi Avvia.",
+      logSize: "Registro: {0}", events: "Disconnessioni registrate: {0}", cfsState: "CFS: {0}",
+      boxConnect: "collegato", boxDisconnect: "scollegato",
+      service: "Servizio", running: "Attivo", stopped: "Fermo: non registra e non ripristina",
+      log: "Registro", on: "Acceso", off: "Spento", logOff: "Spento: continua a sorvegliare e a ripristinare",
+      usbRecovery: "Ripristino USB automatico", start: "Avvia", stop: "Ferma", turnOn: "Accendi", turnOff: "Spegni",
+      confirmClean: "Eliminare il registro della Diagnostica CFS e il suo riepilogo? Non si può annullare.",
+      reading: "Lettura..."
+    }
+  };
+
+  // Lingua di Fluidd ("it", "en", ...); se Fluidd non la dice si usa quella del browser.
+  function lingua() {
+    var loc = "";
+    try {
+      var app = document.getElementById("app");
+      loc = app && app.__vue__ && app.__vue__.$i18n && app.__vue__.$i18n.locale;
+    } catch (e) {}
+    if (!loc) loc = navigator.language || "en";
+    return String(loc).toLowerCase().indexOf("it") === 0 ? "it" : "en";
+  }
+
+  function t(key) {
+    var table = TESTI[lingua()];
+    var text = table[key] !== undefined ? table[key] : (TESTI.en[key] !== undefined ? TESTI.en[key] : key);
+    for (var i = 1; i < arguments.length; i++) text = text.split("{" + (i - 1) + "}").join(String(arguments[i]));
+    return text;
+  }
+
   var card, badgesEl, bodyEl, collapseBtn, modeBtn, headEl;
+  var lastLingua = "";
   var modal = null;
   var prefs = { mode: "docked", x: null, y: null, collapsed: false };
   var latest = null;
@@ -178,7 +288,7 @@
     var mat = fieldAt(unit.material_type, i);
     var col = fieldAt(unit.color_value, i);
     var slot = {
-      kind: "empty", id: "", title: "Empty", detail: "", color: parseColor(col), remain: parseLength(fieldAt(unit.remain_len, i))
+      kind: "empty", id: "", title: t("empty"), detail: "", color: parseColor(col), remain: parseLength(fieldAt(unit.remain_len, i))
     };
 
     // The box keeps the last color and material of an emptied slot; "vender: none" is what says nothing is loaded
@@ -203,12 +313,12 @@
         slot.detail = entry[0] === "Generic" ? "" : entry[0] + " " + entry[1];
         if (!slot.color) slot.color = parseColor(entry[3]);
       } else {
-        slot.title = "Material " + mat;
+        slot.title = t("materialId", mat);
       }
       if (hasVender && !slot.detail) slot.detail = vender;
     } else if (slot.color || anyUnknown || hasVender) {
       slot.kind = "unset";
-      slot.title = "Not set";
+      slot.title = t("notSet");
       if (hasVender) slot.detail = vender;
     }
     return slot;
@@ -264,7 +374,7 @@
       credentials: "same-origin",
       body: JSON.stringify({ script: script })
     }).then(function (response) {
-      if (!response.ok) throw new Error("Moonraker answered HTTP " + response.status);
+      if (!response.ok) throw new Error(t("moonrakerHttp", response.status));
     });
   }
 
@@ -481,9 +591,9 @@
     row.appendChild(badgesEl);
 
     var buttons = el("div", "col col-auto align-self-center pcfs-row");
-    modeBtn = iconButton(ICONS.undock, "Undock");
+    modeBtn = iconButton(ICONS.undock, t("undock"));
     modeBtn.addEventListener("click", toggleMode);
-    collapseBtn = iconButton(ICONS.chevronUp, "Collapse");
+    collapseBtn = iconButton(ICONS.chevronUp, t("collapse"));
     collapseBtn.className += " pcfs-chevron";
     collapseBtn.addEventListener("click", toggleCollapsed);
     buttons.appendChild(modeBtn);
@@ -508,7 +618,7 @@
     if (!modeBtn) return;
     var floating = isFloating();
     setButtonIcon(modeBtn, floating ? ICONS.dock : ICONS.undock);
-    modeBtn.title = floating ? "Dock to the dashboard" : "Undock";
+    modeBtn.title = floating ? t("dock") : t("undock");
   }
 
   function toggleMode() {
@@ -524,7 +634,7 @@
     // "collapsed" is the class Fluidd gives its own collapsed cards (it removes the title shadow).
     card.classList.toggle("collapsed", prefs.collapsed);
     card.classList.toggle("pcfs-collapsed", prefs.collapsed);
-    collapseBtn.title = prefs.collapsed ? "Expand" : "Collapse";
+    collapseBtn.title = prefs.collapsed ? t("expand") : t("collapse");
   }
 
   function toggleCollapsed() {
@@ -672,7 +782,7 @@
       if (slot.color) tile.style.setProperty("--pcfs-spool", slot.color);
       tile.appendChild(el("div", "pcfs-spool"));
       var info = el("div", "pcfs-info");
-      info.appendChild(el("span", "pcfs-channel", "Channel " + unit.id + SLOT_LETTERS[i]));
+      info.appendChild(el("span", "pcfs-channel", t("channel", unit.id + SLOT_LETTERS[i])));
       info.appendChild(el("span", "pcfs-type", slot.title));
       var detail = [];
       if (slot.detail) detail.push(slot.detail);
@@ -681,7 +791,7 @@
       tile.appendChild(info);
       if (unit.active === i) tile.appendChild(el("div", "pcfs-dot"));
       if (slot.kind !== "empty") {
-        tile.title = "Edit this spool";
+        tile.title = t("editSpool");
         tile.addEventListener("click", function () { openEditor(unit, i); });
       }
       grid.appendChild(tile);
@@ -699,7 +809,14 @@
   }
 
   function render(data) {
-    var signature = JSON.stringify(data) + "|" + diagReady + "|" + refreshReady + "|" + refreshing + "|" + refreshError;
+    var lang = lingua();
+    if (lang !== lastLingua) {
+      // Cambiata la lingua in Fluidd: anche i titoli dei pulsanti della scheda
+      lastLingua = lang;
+      updateModeButton();
+      applyCollapsed();
+    }
+    var signature = lang + "|" + JSON.stringify(data) + "|" + diagReady + "|" + refreshReady + "|" + refreshing + "|" + refreshError;
     if (signature === lastSignature) return;
     lastSignature = signature;
 
@@ -707,11 +824,11 @@
     badgesEl.textContent = "";
 
     if (!data.connected || !data.units.length) {
-      bodyEl.appendChild(el("div", "pcfs-note", "CFS disconnected."));
+      bodyEl.appendChild(el("div", "pcfs-note", t("disconnected")));
     } else {
       var first = data.units[0];
-      if (first.humidity !== null) badgesEl.appendChild(badge("humidity", ICONS.drop, first.humidity + "%", "Humidity " + first.humidity + "%"));
-      if (first.temperature !== null) badgesEl.appendChild(badge("temperature", ICONS.thermo, first.temperature + "°C", "Temperature " + first.temperature + "°C"));
+      if (first.humidity !== null) badgesEl.appendChild(badge("humidity", ICONS.drop, first.humidity + "%", t("humidity", first.humidity)));
+      if (first.temperature !== null) badgesEl.appendChild(badge("temperature", ICONS.thermo, first.temperature + "°C", t("temperature", first.temperature)));
       data.units.forEach(function (unit) {
         bodyEl.appendChild(renderUnit(unit, data.units.length > 1));
       });
@@ -721,10 +838,10 @@
       var footer = el("div", "pcfs-footer");
       if (showRefresh) {
         if (refreshError) footer.appendChild(el("span", "pcfs-footer-note error", refreshError));
-        else if (data.printing) footer.appendChild(el("span", "pcfs-footer-note", "Refresh is not available while printing."));
-        else if (refreshing) footer.appendChild(el("span", "pcfs-footer-note", "The CFS is checking every slot: it moves the filament a little."));
-        var refreshBtn = textButton(refreshing ? "REFRESHING..." : "REFRESH SLOTS", false);
-        refreshBtn.title = "Check every slot again (spool present and RFID tag), like the Refresh button of the printer screen";
+        else if (data.printing) footer.appendChild(el("span", "pcfs-footer-note", t("refreshPrinting")));
+        else if (refreshing) footer.appendChild(el("span", "pcfs-footer-note", t("refreshRunning")));
+        var refreshBtn = textButton(refreshing ? t("refreshing") : t("refreshSlots"), false);
+        refreshBtn.title = t("refreshTitle");
         if (data.printing || refreshing) {
           refreshBtn.disabled = true;
           refreshBtn.className += " v-btn--disabled";
@@ -734,7 +851,7 @@
         footer.appendChild(refreshBtn);
       }
       if (diagReady) {
-        var diagBtn = textButton("CFS DIAGNOSTICS", false);
+        var diagBtn = textButton(t("diagButton"), false);
         diagBtn.addEventListener("click", openDiagnostics);
         footer.appendChild(diagBtn);
       }
@@ -757,7 +874,7 @@
       chain = chain.then(function () { return runScript("BOX_INFO_REFRESH ADDR=" + unit.id + " NUM=15"); });
     });
     chain.catch(function (error) {
-      refreshError = error && error.message ? error.message : "The refresh could not be sent.";
+      refreshError = error && error.message ? error.message : t("refreshFailed");
       window.setTimeout(function () { refreshError = ""; lastSignature = ""; if (latest) render(latest); }, 8000);
     }).then(function () {
       refreshing = false;
@@ -887,8 +1004,8 @@
     modal.appendChild(dialog);
 
     var head = el("div", "pcfs-dialog-head");
-    head.appendChild(el("span", "font-weight-light", "Channel " + unit.id + num));
-    var closeBtn = iconButton(ICONS.close, "Close");
+    head.appendChild(el("span", "font-weight-light", t("channel", unit.id + num)));
+    var closeBtn = iconButton(ICONS.close, t("close"));
     head.appendChild(closeBtn);
     dialog.appendChild(head);
 
@@ -897,34 +1014,34 @@
     var typeSel = el("select");
     var nameSel = el("select");
     var temps = el("div", "pcfs-temps");
-    body.appendChild(field("Brand", brandSel));
-    body.appendChild(field("Material", typeSel));
-    body.appendChild(field("Filament", nameSel));
+    body.appendChild(field(t("brand"), brandSel));
+    body.appendChild(field(t("material"), typeSel));
+    body.appendChild(field(t("filament"), nameSel));
     var extraRow = el("div", "pcfs-extra");
-    var newBtn = textButton("New filament", false);
-    var delBtn = textButton("Delete this filament", false);
+    var newBtn = textButton(t("newFilament"), false);
+    var delBtn = textButton(t("deleteFilament"), false);
     extraRow.appendChild(newBtn);
     extraRow.appendChild(delBtn);
     body.appendChild(extraRow);
-    body.appendChild(field("Nozzle", temps));
+    body.appendChild(field(t("nozzle"), temps));
 
     var cc = colorControl(color, function (value, byUser) {
       color = value;
       if (byUser) colorTouched = true;
     });
-    body.appendChild(field("Color", cc.box));
+    body.appendChild(field(t("color"), cc.box));
 
     var status = el("div", "pcfs-status");
     if (latest && latest.printing) {
-      status.textContent = "A print is in progress: the spools cannot be edited now.";
+      status.textContent = t("printingNoEdit");
       status.className += " error";
     }
     body.appendChild(status);
     dialog.appendChild(body);
 
     var actions = el("div", "pcfs-actions");
-    var cancelBtn = textButton("Cancel", false);
-    var saveBtn = textButton("Save", true);
+    var cancelBtn = textButton(t("cancel"), false);
+    var saveBtn = textButton(t("save"), true);
     actions.appendChild(cancelBtn);
     actions.appendChild(saveBtn);
     dialog.appendChild(actions);
@@ -973,22 +1090,22 @@
     delBtn.addEventListener("click", function () {
       if (busy || !CUSTOM[materialId]) return;
       var entry = MATERIALS[materialId];
-      if (!window.confirm("Delete " + entry[0] + " " + entry[1] + " from the database?\nThe spools that use it will show as an unknown material.")) return;
+      if (!window.confirm(t("confirmDelete", entry[0] + " " + entry[1]))) return;
       var id = materialId;
       setBusy(true);
-      setStatus("Deleting...");
+      setStatus(t("deleting"));
       runScript("CFS_REMOVE_MATERIAL ID=" + id).then(function () {
         return waitFor(function () { return loadCustom().then(function () { return !CUSTOM[id]; }); }, 8, 1000);
       }).then(function (gone) {
         if (!gone) {
           setBusy(false);
-          return lastHelperMessage().then(function (message) { setStatus(message || "The printer did not confirm the removal.", "error"); });
+          return lastHelperMessage().then(function (message) { setStatus(message || t("noRemovalConfirm"), "error"); });
         }
         lastSignature = "";
         openEditor(unit, index);
       }).catch(function (error) {
         setBusy(false);
-        setStatus(error && error.message ? error.message : "The removal could not be sent.", "error");
+        setStatus(error && error.message ? error.message : t("removalFailed"), "error");
       });
     });
 
@@ -1011,17 +1128,17 @@
           var u = data && data.units.filter(function (item) { return item.id === unit.id; })[0];
           var s = u && u.slots[index];
           if (s && s.id === materialId && s.color === color) {
-            setStatus("Saved.", "ok");
+            setStatus(t("saved"), "ok");
             window.setTimeout(finish, 900);
           } else if (tries > 1) {
             verify(tries - 1);
           } else {
             setBusy(false);
-            setStatus("The CFS has not reported the change yet. Check the card in a few seconds.", "error");
+            setStatus(t("notReported"), "error");
           }
         }).catch(function () {
           if (tries > 1) verify(tries - 1);
-          else { setBusy(false); setStatus("Could not read the CFS.", "error"); }
+          else { setBusy(false); setStatus(t("readFailed"), "error"); }
         });
       }, VERIFY_MS);
     }
@@ -1029,11 +1146,11 @@
     saveBtn.addEventListener("click", function () {
       if (busy || !materialId) return;
       setBusy(true);
-      setStatus("Saving...");
+      setStatus(t("saving"));
       var target = "BOX_MODIFY_TN_DATA ADDR=" + unit.id + " NUM=" + num;
       // Checked again here: a print may have started while the dialog was open.
       fetchStatus().then(function (data) {
-        if (data && data.printing) throw new Error("A print is in progress: the spools cannot be edited now.");
+        if (data && data.printing) throw new Error(t("printingNoEdit"));
         return runScript(target + " PART=material_type DATA=" + materialId);
       }).then(function () {
         // Klipper treats "#" as a comment: the color goes as 0RRGGBB.
@@ -1042,7 +1159,7 @@
         verify(VERIFY_TRIES);
       }).catch(function (error) {
         setBusy(false);
-        setStatus(error && error.message ? error.message : "The change could not be sent.", "error");
+        setStatus(error && error.message ? error.message : t("changeFailed"), "error");
       });
     });
 
@@ -1065,8 +1182,8 @@
     modal.appendChild(dialog);
 
     var head = el("div", "pcfs-dialog-head");
-    head.appendChild(el("span", "font-weight-light", "New filament"));
-    var closeBtn = iconButton(ICONS.close, "Close");
+    head.appendChild(el("span", "font-weight-light", t("newFilament")));
+    var closeBtn = iconButton(ICONS.close, t("close"));
     head.appendChild(closeBtn);
     dialog.appendChild(head);
 
@@ -1098,7 +1215,7 @@
     var minIn = numberInput(baseEntry[4]);
     var maxIn = numberInput(baseEntry[5]);
     var temps = el("div", "pcfs-temprow");
-    [["Nozzle", nozzleIn], ["Min", minIn], ["Max", maxIn]].forEach(function (pair) {
+    [[t("nozzle"), nozzleIn], [t("min"), minIn], [t("max"), maxIn]].forEach(function (pair) {
       var cell = el("div", "pcfs-tempcell");
       cell.appendChild(el("label", "", pair[0]));
       cell.appendChild(pair[1]);
@@ -1107,21 +1224,21 @@
     var color = parseColor(baseEntry[3]) || "#ffffff";
     var cc = colorControl(color, function (value) { color = value; });
 
-    body.appendChild(el("div", "pcfs-hint", "Pick the filament it looks like: the new one starts as a copy of it."));
-    body.appendChild(field("Based on", baseSel));
-    body.appendChild(field("Brand", brandIn));
+    body.appendChild(el("div", "pcfs-hint", t("hintBase")));
+    body.appendChild(field(t("basedOn"), baseSel));
+    body.appendChild(field(t("brand"), brandIn));
     body.appendChild(brandList);
-    body.appendChild(field("Name", nameIn));
-    body.appendChild(field("Material", typeSel));
-    body.appendChild(field("Temp (\u00b0C)", temps));
-    body.appendChild(field("Color", cc.box));
+    body.appendChild(field(t("name"), nameIn));
+    body.appendChild(field(t("material"), typeSel));
+    body.appendChild(field(t("temp"), temps));
+    body.appendChild(field(t("color"), cc.box));
     var status = el("div", "pcfs-status");
     body.appendChild(status);
     dialog.appendChild(body);
 
     var actions = el("div", "pcfs-actions");
-    var cancelBtn = textButton("Back", false);
-    var createBtn = textButton("Add", true);
+    var cancelBtn = textButton(t("back"), false);
+    var createBtn = textButton(t("add"), true);
     actions.appendChild(cancelBtn);
     actions.appendChild(createBtn);
     dialog.appendChild(actions);
@@ -1155,14 +1272,14 @@
     function validate() {
       var brand = brandIn.value.trim();
       var name = nameIn.value.trim();
-      if (!NAME_PATTERN.test(brand) || brand.length > 24) return "The brand needs letters, digits, spaces and . _ + - (24 characters at most).";
-      if (!NAME_PATTERN.test(name) || name.length > 24) return "The name needs letters, digits, spaces and . _ + - (24 characters at most).";
+      if (!NAME_PATTERN.test(brand) || brand.length > 24) return t("brandInvalid");
+      if (!NAME_PATTERN.test(name) || name.length > 24) return t("nameInvalid");
       var nozzle = Number(nozzleIn.value), min = Number(minIn.value), max = Number(maxIn.value);
       var ok = function (n) { return isFinite(n) && n === Math.round(n) && n >= 150 && n <= 350; };
-      if (!ok(nozzle) || !ok(min) || !ok(max)) return "The temperatures must be whole numbers between 150 and 350.";
-      if (min > nozzle || nozzle > max) return "The temperatures must satisfy Min <= Nozzle <= Max.";
+      if (!ok(nozzle) || !ok(min) || !ok(max)) return t("tempsWhole");
+      if (min > nozzle || nozzle > max) return t("tempsOrder");
       var exists = materialIds().some(function (id) { return MATERIALS[id][0] === brand && MATERIALS[id][1] === name; });
-      if (exists) return brand + " " + name + " already exists.";
+      if (exists) return t("exists", brand + " " + name);
       return "";
     }
 
@@ -1177,10 +1294,10 @@
         " TYPE=" + space(typeSel.value) + " NOZZLE=" + nozzleIn.value + " MIN=" + minIn.value + " MAX=" + maxIn.value +
         " COLOR=" + color.slice(1).toUpperCase();
       setBusy(true);
-      setStatus("Adding...");
+      setStatus(t("adding"));
       var created = "";
       fetchStatus().then(function (data) {
-        if (data && data.printing) throw new Error("A print is in progress: the database cannot be changed now.");
+        if (data && data.printing) throw new Error(t("printingNoDb"));
         return runScript(command);
       }).then(function () {
         return waitFor(function () {
@@ -1192,13 +1309,13 @@
       }).then(function (found) {
         if (!found) {
           setBusy(false);
-          return lastHelperMessage().then(function (message) { setStatus(message || "The printer did not confirm the new filament.", "error"); });
+          return lastHelperMessage().then(function (message) { setStatus(message || t("noNewConfirm"), "error"); });
         }
         lastSignature = "";
         openEditor(unit, index, created);
       }).catch(function (error) {
         setBusy(false);
-        setStatus(error && error.message ? error.message : "The filament could not be added.", "error");
+        setStatus(error && error.message ? error.message : t("addFailed"), "error");
       });
     });
 
@@ -1254,8 +1371,8 @@
     modal.appendChild(dialog);
 
     var head = el("div", "pcfs-dialog-head");
-    head.appendChild(el("span", "font-weight-light", "CFS Diagnostics"));
-    var closeBtn = iconButton(ICONS.close, "Close");
+    head.appendChild(el("span", "font-weight-light", t("diagTitle")));
+    var closeBtn = iconButton(ICONS.close, t("close"));
     head.appendChild(closeBtn);
     dialog.appendChild(head);
 
@@ -1270,13 +1387,13 @@
     dialog.appendChild(body);
 
     var actions = el("div", "pcfs-actions");
-    var deleteBtn = textButton("Delete log", false);
+    var deleteBtn = textButton(t("deleteLog"), false);
     var oldBtn = el("a", "v-btn theme--dark v-size--default v-btn--text");
-    oldBtn.appendChild(el("span", "v-btn__content", "Previous log"));
+    oldBtn.appendChild(el("span", "v-btn__content", t("previousLog")));
     oldBtn.setAttribute("href", DIAG_LOG_URL + ".1");
     oldBtn.setAttribute("download", "cfs_diag.log.1");
     var downloadBtn = el("a", "v-btn theme--dark v-size--default v-btn--has-bg primary");
-    downloadBtn.appendChild(el("span", "v-btn__content", "Download log"));
+    downloadBtn.appendChild(el("span", "v-btn__content", t("downloadLog")));
     downloadBtn.setAttribute("href", DIAG_LOG_URL);
     downloadBtn.setAttribute("download", "cfs_diag.log");
     actions.appendChild(deleteBtn);
@@ -1298,7 +1415,7 @@
     function act(command, check) {
       if (busy) return;
       setBusy(true);
-      setStatus("Working...");
+      setStatus(t("working"));
       runScript(command).then(function () {
         return waitFor(function () {
           return loadDiag().then(function (d) { diag = d; return check(d); });
@@ -1306,10 +1423,10 @@
       }).then(function (done) {
         setBusy(false);
         show(diag);
-        setStatus(done ? "Done." : "The printer did not confirm the change.", done ? "ok" : "error");
+        setStatus(done ? t("done") : t("noChangeConfirm"), done ? "ok" : "error");
       }).catch(function (error) {
         setBusy(false);
-        setStatus(error && error.message ? error.message : "The change could not be made.", "error");
+        setStatus(error && error.message ? error.message : t("changeNotMade"), "error");
       });
     }
 
@@ -1330,27 +1447,27 @@
       list.textContent = "";
       var s = d && d.status;
       if (d && s === undefined) {
-        info.textContent = "The state of the service could not be read.";
+        info.textContent = t("stateUnreadable");
       } else if (d && s === null) {
-        info.textContent = "The service has not written its state yet: press Start.";
+        info.textContent = t("stateMissing");
       } else if (d) {
         var parts = [];
-        if (d.size !== null) parts.push("Log size: " + formatSize(d.size));
-        parts.push("Disconnections recorded: " + (Number(s.events) || 0));
-        parts.push("CFS: " + String(s.box));
+        if (d.size !== null) parts.push(t("logSize", formatSize(d.size)));
+        parts.push(t("events", Number(s.events) || 0));
+        parts.push(t("cfsState", s.box === "connect" ? t("boxConnect") : s.box === "disconnect" ? t("boxDisconnect") : String(s.box)));
         info.textContent = parts.join(" · ");
       } else {
         info.textContent = "";
       }
       var known = !!s;
       var running = known && s.running === true;
-      list.appendChild(row("Service", running, "Running", "Stopped: not logging and not recovering", running ? "Stop" : "Start",
+      list.appendChild(row(t("service"), running, t("running"), t("stopped"), running ? t("stop") : t("start"),
         running ? "CFS_DIAG_DISABLE" : "CFS_DIAG_ENABLE", function (x) { return !!(x.status && x.status.running === !running); }, !!d));
       var logging = known && s.logging !== false;
-      list.appendChild(row("Log", logging, "On", "Off: still watching and recovering", logging ? "Turn off" : "Turn on",
+      list.appendChild(row(t("log"), logging, t("on"), t("logOff"), logging ? t("turnOff") : t("turnOn"),
         logging ? "CFS_DIAG_LOG_OFF" : "CFS_DIAG_LOG_ON", function (x) { return !!(x.status && x.status.logging === !logging); }, known));
       var recover = known && s.autorecover === true;
-      list.appendChild(row("USB auto-recovery", recover, "On", "Off", recover ? "Turn off" : "Turn on",
+      list.appendChild(row(t("usbRecovery"), recover, t("on"), t("off"), recover ? t("turnOff") : t("turnOn"),
         recover ? "CFS_DIAG_AUTORECOVER_OFF" : "CFS_DIAG_AUTORECOVER_ON", function (x) { return !!(x.status && x.status.autorecover === !recover); }, known));
       var hasLog = !!d && d.size !== null && d.size > 0;
       deleteBtn.disabled = !(hasLog || (!!d && d.hasOld));
@@ -1360,7 +1477,7 @@
 
     deleteBtn.addEventListener("click", function () {
       if (busy) return;
-      if (!window.confirm("Delete the CFS Diagnostics log and its summary? This cannot be undone.")) return;
+      if (!window.confirm(t("confirmClean"))) return;
       var before = diag && diag.size !== null ? diag.size : 0;
       act("CFS_DIAG_CLEAN", function (x) { return x.size !== null && (x.size < before || (x.size === 0 && !x.hasOld)); });
     });
@@ -1368,7 +1485,7 @@
     closeBtn.addEventListener("click", closeEditor);
 
     show(null);
-    setStatus("Reading...");
+    setStatus(t("reading"));
     loadDiag().then(function (d) {
       diag = d;
       show(d);
