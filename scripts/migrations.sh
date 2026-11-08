@@ -193,6 +193,8 @@ function migrate_fluidd_power_theme(){
     echo -e "${white}Info: Updating the ADL logo for Fluidd..."
     copy_power_script_theme_files
   fi
+  # Logo leggibile dal server web anche se era gia' stato copiato con i permessi sbagliati.
+  chmod 644 "$FLUIDD_THEME_LOGO_FILE"
   if ! jq -e --arg c "$POWER_THEME_COLOR" '[.themePresets[]? | select(.name == "ADL" and .color == $c)] | length > 0' "$FLUIDD_FOLDER/config.json" > /dev/null 2>&1; then
     echo -e "${white}Info: Adding the ADL theme to the Fluidd config.json file..."
     add_power_script_theme_preset || true
