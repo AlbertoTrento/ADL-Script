@@ -35,25 +35,25 @@
 <stop offset="1" stop-color="#a1aeb9"/>
 </linearGradient>
 </defs><g transform="translate(15.6 160) scale(.25)" stroke-linejoin="round" stroke-linecap="round">
-<path d="M590 101 L1029 101 C1184 101 1290 219 1290 382 C1290 541 1175 668 1033 668 L927 668 L837 528 L1018 528 C1097 528 1148 477 1148 399 C1148 321 1095 269 1016 269 L704 269 Z" fill="#232a31" stroke="#E10600" stroke-width="5"/>
+<path d="M590 101 L1029 101 C1184 101 1290 219 1290 382 C1290 541 1175 668 1033 668 L927 668 L837 528 L1018 528 C1097 528 1148 477 1148 399 C1148 321 1095 269 1016 269 L704 269 Z" fill="#232a31" stroke="#FF1E10" stroke-width="44"/>
 <path d="M609 115 L1027 115 C1172 115 1276 227 1276 382 C1276 531 1167 654 1031 654 L939 654 L861 542 L1017 542 C1108 542 1163 484 1163 399 C1163 312 1106 254 1016 254 L714 254 Z" fill="url(#adl-fluidd-metal)"/>
 <path d="M610 115 L1027 115 C1129 115 1205 165 1246 238" fill="none" stroke="#faffff" stroke-width="3.6" opacity="0.88"/>
 <path d="M714 254 L1016 254 C1106 254 1163 312 1163 399 C1163 484 1108 542 1017 542 L861 542" fill="none" stroke="#e7edf2" stroke-width="2.8" opacity="0.68"/>
 <path d="M940 653 L1031 653 C1139 653 1227 583 1262 480" fill="none" stroke="#dbe5ed" stroke-width="3.4" opacity="0.85"/>
-<path d="M1302 101 L1463 101 L1463 528 L1750 528 L1845 667 L1293 667 L1293 116 C1293 107 1296 101 1302 101 Z" fill="#232a31" stroke="#E10600" stroke-width="5"/>
+<path d="M1302 101 L1463 101 L1463 528 L1750 528 L1845 667 L1293 667 L1293 116 C1293 107 1296 101 1302 101 Z" fill="#232a31" stroke="#FF1E10" stroke-width="44"/>
 <path d="M1309 116 L1448 116 L1448 542 L1743 542 L1820 652 L1309 652 Z" fill="url(#adl-fluidd-metal)"/>
 <path d="M1310 116 L1447 116 L1447 542 L1743 542 L1819 651" fill="none" stroke="#f6faff" stroke-width="3.6" opacity="0.9"/>
 <path d="M1310 119 L1310 652 L1820 652" fill="none" stroke="#c4d0da" stroke-width="2.7" opacity="0.77"/>
-<path d="M1301 659 L1831 659" fill="none" stroke="#E10600" stroke-width="2.5" opacity="0.85"/>
-<path d="M78 665 L520 102 L921 667 L744 667 L518 339 L253 667 Z" fill="#232a31" stroke="#E10600" stroke-width="5"/>
+<path d="M1301 659 L1831 659" fill="none" stroke="#FF1E10" stroke-width="22" opacity="1"/>
+<path d="M78 665 L520 102 L921 667 L744 667 L518 339 L253 667 Z" fill="#232a31" stroke="#FF1E10" stroke-width="44"/>
 <path d="M100 652 L520 124 L518 321 L243 652 Z" fill="url(#adl-fluidd-left)"/>
 <path d="M520 124 L898 652 L754 652 L518 321 Z" fill="url(#adl-fluidd-right)"/>
 <path d="M100 652 L520 124 L898 652" fill="none" stroke="#faffff" stroke-width="3.6" opacity="0.93"/>
 <path d="M520 126 L518 321 L243 652" fill="none" stroke="#e4edf4" stroke-width="3.2" opacity="0.8"/>
 <path d="M754 652 L518 321" fill="none" stroke="#becad5" stroke-width="2.5" opacity="0.7"/>
 <path d="M101 653 L243 653 M754 653 L898 653" fill="none" stroke="#eef4f8" stroke-width="3.2" opacity="0.92"/>
-<path d="M341 667 L518 439 L690 667 Z" fill="#232a31" stroke="#E10600" stroke-width="5"/>
+<path d="M341 667 L518 439 L690 667 Z" fill="#232a31" stroke="#FF1E10" stroke-width="44"/>
 <path d="M361 653 L518 459 L670 653 Z" fill="url(#adl-fluidd-core)"/>
 <path d="M361 653 L518 459 L670 653 Z" fill="none" stroke="#edf4fa" stroke-width="3" opacity="0.85"/>
-<path d="M354 660 L679 660" fill="none" stroke="#E10600" stroke-width="2.6" opacity="0.9"/>
+<path d="M354 660 L679 660" fill="none" stroke="#FF1E10" stroke-width="22" opacity="1"/>
 </g></svg>
