@@ -36,6 +36,9 @@
   var VERIFY_MS = 2500;
   var VERIFY_TRIES = 3;
   var CUSTOM_FILE_URL = "/server/files/config/Helper-Script/cfs-custom-materials.json";
+  // Elenco di tutti i filamenti del database della stampante, scritto da cfs_materials.sh export
+  // a ogni avvio di Klipper: le stesse marche dello schermo, anche quelle caricate con CFS Forge.
+  var PRINTER_FILE_URL = "/server/files/config/Helper-Script/cfs-printer-materials.json";
   var CUSTOM_REFRESH_MS = 30000;
   var DIAG_STATUS_URL = "/server/files/logs/cfs_diag.status";
   var DIAG_LOG_URL = "/server/files/logs/cfs_diag.log";
@@ -230,6 +233,7 @@
   var prefs = { mode: "docked", x: null, y: null, collapsed: false };
   var latest = null;
   var CUSTOM = {};          // ids of the custom filaments (from cfs-custom-materials.json)
+  var BUILTIN = null;       // copia della lista fissa MATERIALS, presa alla prima lettura degli elenchi
   var macrosReady = false;  // the CFS_ADD_MATERIAL macro exists (module "CFS Custom Filaments" installed)
   var diagReady = false;    // the CFS_DIAG_LOG_ON macro exists (module "CFS Diagnostics" installed and up to date)
   var refreshReady = false; // the BOX_INFO_REFRESH macro exists (Creality's own macro, also in the Power Macros)
@@ -389,16 +393,36 @@
   // module): merge them into the table of materials.
   // Resolves true when the list was read. Only a missing file (404: nothing was ever added) empties the
   // list: when Moonraker is busy or restarting the filaments already known are kept and false is returned.
-  function loadCustom() {
-    return fetch(CUSTOM_FILE_URL + "?t=" + Date.now(), { credentials: "same-origin", cache: "no-store" })
+  function fetchMaterialList(url) {
+    return fetch(url + "?t=" + Date.now(), { credentials: "same-origin", cache: "no-store" })
       .then(function (response) {
         if (response.status === 404) return { materials: [] };
         if (!response.ok) throw new Error("HTTP " + response.status);
         return response.json();
-      })
-      .then(function (json) {
-        Object.keys(CUSTOM).forEach(function (id) { delete MATERIALS[id]; });
+      });
+  }
+
+  // Legge l'elenco dei filamenti della stampante e quello dei filamenti personalizzati e rifa' la lista:
+  // la lista fissa, poi quelli della stampante (che hanno la precedenza), poi i personalizzati.
+  // Senza l'elenco della stampante (file mancante) resta la lista fissa, come prima.
+  function loadCustom() {
+    return Promise.all([fetchMaterialList(PRINTER_FILE_URL), fetchMaterialList(CUSTOM_FILE_URL)])
+      .then(function (lists) {
+        if (!BUILTIN) {
+          BUILTIN = {};
+          Object.keys(MATERIALS).forEach(function (id) { BUILTIN[id] = MATERIALS[id]; });
+        }
+        Object.keys(MATERIALS).forEach(function (id) {
+          if (BUILTIN[id]) MATERIALS[id] = BUILTIN[id];
+          else delete MATERIALS[id];
+        });
+        var printer = lists[0] && Array.isArray(lists[0].materials) ? lists[0].materials : [];
+        printer.forEach(function (m) {
+          if (!m || !/^[0-9]{5}$/.test(String(m.id)) || !m.brand || !m.name) return;
+          MATERIALS[String(m.id)] = [String(m.brand), String(m.name), String(m.type || ""), parseColor(m.color), Number(m.min) || 0, Number(m.max) || 0, Number(m.nozzle) || 0];
+        });
         CUSTOM = {};
+        var json = lists[1];
         var list = json && Array.isArray(json.materials) ? json.materials : [];
         list.forEach(function (m) {
           if (!m || !/^9[0-9]{4}$/.test(String(m.id))) return;

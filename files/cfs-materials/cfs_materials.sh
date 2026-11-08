@@ -23,6 +23,8 @@ DB_DIR="${CFS_DB_DIR:-/usr/data/creality/userdata/box}"
 DB_FILE="$DB_DIR/material_database.json"
 OPT_FILE="$DB_DIR/material_option.json"
 CUSTOM_FILE="${CFS_CUSTOM_FILE:-/usr/data/printer_data/config/Helper-Script/cfs-custom-materials.json}"
+# Copia dell'elenco di tutti i filamenti della stampante, letta dal pannello CFS di Fluidd.
+EXPORT_FILE="${CFS_EXPORT_FILE:-/usr/data/printer_data/config/Helper-Script/cfs-printer-materials.json}"
 BACKUP_DIR="${CFS_BACKUP_DIR:-/usr/data/backup-cfs-materials}"
 JQ="${JQ:-jq}"
 ID_FIRST=90001
@@ -302,13 +304,38 @@ cmd_reapply() {
   fi
 }
 
+# Scrive in $EXPORT_FILE l'elenco di tutti i filamenti del database della stampante (numero, marca,
+# nome, tipo, temperature, colore), cosi' il pannello CFS di Fluidd conosce le stesse marche dello
+# schermo, anche quelle caricate con CFS Forge. Il database viene solo letto. Il file viene riscritto
+# solo se l'elenco e' cambiato.
+cmd_export() {
+  [ -f "$DB_FILE" ] || return 0
+  mkdir -p "$(dirname "$EXPORT_FILE")"
+  "$JQ" '{ version: 1, materials: [ .result.list[]? | (.base // {}) as $b
+      | select(($b.id // "") != "")
+      | { id: ($b.id | tostring), brand: ($b.brand // ""), name: ($b.name // ""), type: ($b.meterialType // ""),
+          min: ($b.minTemp // 0), max: ($b.maxTemp // 0),
+          nozzle: (((.kvParam // {}).nozzle_temperature // "0") | tostring | (tonumber? // 0)),
+          color: ((($b.colors // [])[0]) // "") } ] }' "$DB_FILE" > "$EXPORT_FILE.new" \
+    || { rm -f "$EXPORT_FILE.new"; die "could not read the database"; }
+  "$JQ" -e '.materials | type == "array"' "$EXPORT_FILE.new" > /dev/null 2>&1 \
+    || { rm -f "$EXPORT_FILE.new"; die "the generated list is not valid"; }
+  if [ -f "$EXPORT_FILE" ] && cmp -s "$EXPORT_FILE.new" "$EXPORT_FILE"; then
+    rm -f "$EXPORT_FILE.new"
+    return 0
+  fi
+  chmod 644 "$EXPORT_FILE.new"
+  mv "$EXPORT_FILE.new" "$EXPORT_FILE"
+}
+
 action="${1:-}"
 [ "$#" -gt 0 ] && shift
 case "$action" in
-  add) cmd_add "$@";;
-  remove) cmd_remove "$@";;
-  remove-all) cmd_remove_all;;
+  add) cmd_add "$@"; cmd_export;;
+  remove) cmd_remove "$@"; cmd_export;;
+  remove-all) cmd_remove_all; cmd_export;;
   list) cmd_list;;
-  reapply) cmd_reapply;;
-  *) echo "Usage: cfs_materials.sh add BASE BRAND NAME TYPE NOZZLE MIN MAX RRGGBB | remove ID | remove-all | list | reapply"; exit 1;;
+  reapply) cmd_reapply; cmd_export;;
+  export) cmd_export;;
+  *) echo "Usage: cfs_materials.sh add BASE BRAND NAME TYPE NOZZLE MIN MAX RRGGBB | remove ID | remove-all | list | reapply | export"; exit 1;;
 esac
