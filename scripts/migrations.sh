@@ -163,13 +163,32 @@ function migrate_fluidd_logos(){
   fi
 }
 
-# A Fluidd update replaces config.json and the PowerUI theme disappears.
+# Il tema PowerUI e' diventato ADL. Chi aveva PowerUI riceve il logo e il tema ADL al suo
+# posto e, se usava PowerUI, si trova selezionato ADL. Il vecchio logo resta sul disco,
+# cosi' Fluidd non perde il logo se Moonraker non risponde e la selezione non cambia.
+function migrate_fluidd_power_theme_to_adl(){
+  [ -f "$FLUIDD_THEME_OLD_LOGO_FILE" ] || return 0
+  [ -f "$FLUIDD_THEME_LOGO_FILE" ] && return 0
+  [ -f "$FLUIDD_FOLDER/config.json" ] || return 0
+  local current
+  echo -e "${white}Info: Replacing the PowerUI theme with the ADL theme in Fluidd..."
+  copy_power_script_theme_files
+  add_power_script_theme_preset || true
+  current=$("$CURL" -s "localhost:7125/server/database/item?namespace=fluidd&key=uiSettings.theme" 2>/dev/null | jq -c '.result.value // empty' 2>/dev/null) || return 0
+  [ -n "$current" ] || return 0
+  if [ "$(echo "$current" | jq -r '.logo.src // ""')" = "logo_power_script.svg" ]; then
+    echo -e "Info: Selecting the ADL theme..."
+    select_power_script_theme || true
+  fi
+}
+
+# A Fluidd update replaces config.json and the ADL theme disappears.
 # Add the preset back (the selected theme is not changed).
 function migrate_fluidd_power_theme(){
   [ -f "$FLUIDD_THEME_LOGO_FILE" ] || return 0
   [ -f "$FLUIDD_FOLDER/config.json" ] || return 0
-  if ! jq -e '[.themePresets[]? | select(.name == "PowerUI")] | length > 0' "$FLUIDD_FOLDER/config.json" > /dev/null 2>&1; then
-    echo -e "${white}Info: Adding the PowerUI theme to the Fluidd config.json file..."
+  if ! jq -e '[.themePresets[]? | select(.name == "ADL")] | length > 0' "$FLUIDD_FOLDER/config.json" > /dev/null 2>&1; then
+    echo -e "${white}Info: Adding the ADL theme to the Fluidd config.json file..."
     add_power_script_theme_preset || true
   fi
 }
@@ -205,6 +224,7 @@ function run_migrations(){
   migrate_bed_fix_wipe
   migrate_bed_fix_mesh
   migrate_fluidd_logos
+  migrate_fluidd_power_theme_to_adl
   migrate_fluidd_power_theme
   migrate_fluidd_cfs_panel
   migrate_cfs_custom_filaments

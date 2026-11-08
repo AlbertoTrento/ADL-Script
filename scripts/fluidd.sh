@@ -45,7 +45,7 @@ function install_fluidd(){
         echo -e "Info: Restarting Moonraker service..."
         stop_moonraker
         start_moonraker
-        echo -e "Info: Applying the PowerUI theme (default for Fluidd)..."
+        echo -e "Info: Applying the ADL theme (default for Fluidd)..."
         apply_power_script_theme installed
         ok_msg "Fluidd has been installed successfully!"
         echo -e "   You can now connect to Fluidd Web Interface with ${yellow}http://$(check_ipaddress):4408${white}"

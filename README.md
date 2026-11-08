@@ -147,7 +147,7 @@ Moonraker Timelapse aggiunge `GET_TIMELAPSE_SETUP`, `TIMELAPSE_TAKE_FRAME` e `TI
 
 Richiede Moonraker collegato a Klipper e il controllo firmware previsto dall'installer. Sostituisce il touchscreen Creality e disabilita Creality Cloud, il collegamento LAN di Creality Print e gli aggiornamenti firmware OTA. La voce 2 richiama la procedura di ripristino e rimuove la configurazione PowerScreen. Script e interfaccia condividono macro, quindi è utile mantenerli aggiornati insieme.
 
-Le altre voci gestiscono l'interfaccia web Creality, i loghi Creality per Fluidd e il tema PowerUI. L'avvio dello script gestisce anche l'animazione ADL con lampo rosso, logo e scritta Alberto Dev Labs.
+Le altre voci gestiscono l'interfaccia web Creality, i loghi Creality per Fluidd e il tema ADL (logo ADL argento e rosso, colore rosso). L'avvio dello script gestisce anche l'animazione ADL con lampo rosso, logo e scritta Alberto Dev Labs.
 
 ## Aggiornamento, rimozione e manutenzione
 

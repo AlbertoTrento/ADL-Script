@@ -180,9 +180,10 @@ function set_paths() {
   FLUIDD_LOGO_FILE="${USR_DATA}/fluidd/logo_creality_v2.svg"
   FLUIDD_LOGO_URL2="${HS_FILES}/fluidd-logos/logo_creality_v2.svg"
 
-  # PowerUI Theme for Fluidd #
-  FLUIDD_THEME_LOGO_FILE="${USR_DATA}/fluidd/logo_power_script.svg"
-  FLUIDD_THEME_LOGO_URL="${HS_FILES}/fluidd-theme/logo_power_script.svg"
+  # ADL Theme for Fluidd (prima PowerUI, con il logo logo_power_script.svg) #
+  FLUIDD_THEME_LOGO_FILE="${USR_DATA}/fluidd/logo_adl.svg"
+  FLUIDD_THEME_LOGO_URL="${HS_FILES}/fluidd-theme/logo_adl.svg"
+  FLUIDD_THEME_OLD_LOGO_FILE="${USR_DATA}/fluidd/logo_power_script.svg"
 
   # CFS Custom Filaments #
   CFS_MATERIALS_FILE="${HS_CONFIG_FOLDER}/cfs-materials.cfg"
