@@ -5,19 +5,33 @@ set -e
 # Fixes configuration written by older versions of the script. Every migration
 # is idempotent and runs each time the script starts.
 
-# Moonraker asks for permission to restart the "CFS-Power-Script" service unless
+# La voce di aggiornamento si chiamava CFS-Power-Script: la rinomina in ADL-Script,
+# cosi' Fluidd e Mainsail mostrano il nome nuovo.
+function migrate_update_manager_name(){
+  [ -f "$MOONRAKER_CFG" ] || return 0
+  grep -q "^\[update_manager CFS-Power-Script\]" "$MOONRAKER_CFG" || return 0
+  echo -e "${white}Info: Renaming the ADL Script entry in moonraker.conf file..."
+  sed -i 's/^\[update_manager CFS-Power-Script\]/[update_manager ADL-Script]/' "$MOONRAKER_CFG"
+  if [ -d "$MOONRAKER_FOLDER" ]; then
+    echo -e "Info: Restarting Moonraker service..."
+    stop_moonraker
+    start_moonraker
+  fi
+}
+
+# Moonraker asks for permission to restart the "ADL-Script" service unless
 # its update_manager entry says it is not a system service.
 function migrate_update_manager_entry(){
   [ -f "$MOONRAKER_CFG" ] || return 0
-  grep -q "^\[update_manager CFS-Power-Script\]" "$MOONRAKER_CFG" || return 0
-  if awk '/^\[/ { in_section = ($0 == "[update_manager CFS-Power-Script]") }
+  grep -q "^\[update_manager ADL-Script\]" "$MOONRAKER_CFG" || return 0
+  if awk '/^\[/ { in_section = ($0 == "[update_manager ADL-Script]") }
           in_section && /^is_system_service[ \t]*:/ { found = 1 }
           END { exit !found }' "$MOONRAKER_CFG"; then
     return 0
   fi
   echo -e "${white}Info: Fixing the ADL Script entry in moonraker.conf file..."
   awk '{ print }
-       /^\[update_manager CFS-Power-Script\]/ { print "is_system_service: False" }' "$MOONRAKER_CFG" > "${MOONRAKER_CFG}.tmp"
+       /^\[update_manager ADL-Script\]/ { print "is_system_service: False" }' "$MOONRAKER_CFG" > "${MOONRAKER_CFG}.tmp"
   mv "${MOONRAKER_CFG}.tmp" "$MOONRAKER_CFG"
   if [ -d "$MOONRAKER_FOLDER" ]; then
     echo -e "Info: Restarting Moonraker service..."
@@ -184,6 +198,7 @@ function migrate_cfs_custom_filaments(){
 }
 
 function run_migrations(){
+  migrate_update_manager_name
   migrate_update_manager_entry
   migrate_split_power_config
   migrate_stepper_y_gcode_max

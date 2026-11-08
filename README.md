@@ -151,7 +151,7 @@ Le altre voci gestiscono l'interfaccia web Creality, i loghi Creality per Fluidd
 
 ## Aggiornamento, rimozione e manutenzione
 
-All'avvio sul ramo `main`, lo script controlla gli aggiornamenti e chiede se applicarli. La procedura usa `git reset --hard` e `git pull`: elimina le modifiche locali ai file tracciati dello script e richiede un nuovo avvio. Da Fluidd/Mainsail la voce del gestore aggiornamenti conserva il nome interno `CFS-Power-Script`, con origine AlbertoTrento/ADL-Script.
+All'avvio sul ramo `main`, lo script controlla gli aggiornamenti e chiede se applicarli. La procedura usa `git reset --hard` e `git pull`: elimina le modifiche locali ai file tracciati dello script e richiede un nuovo avvio. Da Fluidd/Mainsail la voce del gestore aggiornamenti si chiama `ADL-Script`, con origine AlbertoTrento/ADL-Script (le installazioni con il vecchio nome `CFS-Power-Script` vengono rinominate al primo avvio dello script).
 
 Il changelog arriva a **v1.3.9**; il menu ricava invece la versione dal checkout Git. Per aggiornare le configurazioni copiate usare le voci di riapplicazione disponibili. La correzione M600 descritta nel changelog richiede la reinstallazione del modulo e il riavvio di Klipper.
 
