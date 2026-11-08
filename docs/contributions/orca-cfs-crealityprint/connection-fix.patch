@@ -1,0 +1,241 @@
+--- a/cfs.py
++++ b/cfs.py
+@@ -51,4 +51,6 @@
+ _DEFAULTS = {
+     "host": "",
++    "moonraker_hosts": {},
++    "caricati_per_host": {},
+     "interval_seconds": 15,
+     "lingua": "",
+@@ -890,4 +892,15 @@
+ 
+ 
++def resolve_moonraker_host(selected, mappings):
++    """Use an optional per-printer Moonraker alias without changing Orca's print host."""
++    selected = normalize_host(selected)
++    if not selected or not isinstance(mappings, dict):
++        return ""
++    for key, target in mappings.items():
++        if normalize_host(key) == selected:
++            return normalize_host(target)
++    return selected
++
++
+ class CfsSync(orca.script.ScriptPluginCapabilityBase):
+     pannello = None
+@@ -905,4 +918,5 @@
+         # Indirizzo trovato nel thread dell'interfaccia: il poller usa questo, non rilegge la configurazione.
+         self._host = ""
++        self._connection_initialized = False
+         # Filamenti del progetto da caricare nel database della stampante, letti nel thread dell'interfaccia.
+         self._da_caricare = []
+@@ -939,19 +953,27 @@
+ 
+     def _sync_now(self, timeout=TIMEOUT_SECONDS):
+-        base_url = self._host or normalize_host(self._settings()["host"])
++        base_url = self._host
+         if not base_url:
+-            self._stato = {"connessa": False, "unita": [], "errore": "senza_stampante", "ora": "",
+-                           "dettaglio": "; ".join(LETTURE_HOST)}
++            if self._host == base_url:
++                self._stato = {"connessa": False, "unita": [], "errore": "senza_stampante", "ora": "",
++                               "dettaglio": "; ".join(LETTURE_HOST)}
+             return None
+         with self._lock:
++            if self._host != base_url:
++                return None
+             client = Moonraker(base_url, timeout)
+             try:
+                 risposta = client.query_box()
++                if self._host != base_url:
++                    return None
+                 unita = slot_pannello(risposta)
+                 riepilogo = sync(client, risposta)
+             except MoonrakerError:
+-                self._stato = {"connessa": False, "unita": [], "errore": "non_raggiungibile",
+-                               "ora": time.strftime("%H:%M:%S")}
++                if self._host == base_url:
++                    self._stato = {"connessa": False, "unita": [], "errore": "non_raggiungibile",
++                                   "ora": time.strftime("%H:%M:%S")}
+                 raise
++            if self._host != base_url:
++                return None
+             self._stato = {"connessa": True, "unita": unita or [], "errore": "" if unita is not None else "senza_cfs",
+                            "ora": time.strftime("%H:%M:%S")}
+@@ -962,33 +984,48 @@
+         Senza ADL Script li segnala nel pannello: la password di root non entra nel plugin, per sicurezza."""
+         base_url = self._host
+-        caricati = set(self._carica["caricati"])
+-        adesso = time.time()
+-        pendenti = [f for f in self._da_caricare
+-                    if chiave_filamento(f) not in caricati and self._riprova.get(chiave_filamento(f), 0) <= adesso]
+-        self._carica["mancano"] = [f["profilo"] for f in self._da_caricare if chiave_filamento(f) not in caricati]
+         if not base_url:
+             return
++        carica, riprova, errori_filamenti = self._carica, self._riprova, self._errori
++        filamenti = list(self._da_caricare)
++        caricati = set(carica["caricati"])
++        adesso = time.time()
++        pendenti = [f for f in filamenti
++                    if chiave_filamento(f) not in caricati and riprova.get(chiave_filamento(f), 0) <= adesso]
++        if self._host != base_url:
++            return
++        carica["mancano"] = [f["profilo"] for f in filamenti if chiave_filamento(f) not in caricati]
+         client = Moonraker(base_url, attesa)
+         adl = ha_adl(client)  # sempre: la schermata deve dire come si caricano anche quando è già tutto caricato
+-        self._carica["adl"] = adl
++        if self._host != base_url:
++            return
++        carica["adl"] = adl
+         if not pendenti:
+             return
+         if not adl:
+-            self._carica["mancano"] = [f["profilo"] for f in pendenti]
++            carica["mancano"] = [f["profilo"] for f in pendenti]
+             return
+-        if in_stampa(client):
++        stampa = in_stampa(client)
++        if self._host != base_url or stampa:
+             return  # si carica a stampa finita
+-        esiti = {chiave_filamento(f): carica_con_adl(client, f) for f in pendenti}
++        esiti = {}
++        for filamento in pendenti:
++            if self._host != base_url:
++                return
++            esiti[chiave_filamento(filamento)] = carica_con_adl(client, filamento)
++            if self._host != base_url:
++                return
+         errori = [esito for esito in esiti.values() if esito != "ok"]
+         for chiave, esito in esiti.items():
+             if esito == "ok":
+                 caricati.add(chiave)
+-                self._errori.pop(chiave, None)
++                errori_filamenti.pop(chiave, None)
+             else:
+-                self._riprova[chiave] = adesso + 300
+-                self._errori[chiave] = esito
+-        self._carica["caricati"] = sorted(caricati)
+-        self._carica["errore"] = errori[0] if errori else ""
+-        self._carica["mancano"] = [f["profilo"] for f in self._da_caricare if chiave_filamento(f) not in caricati]
++                riprova[chiave] = adesso + 300
++                errori_filamenti[chiave] = esito
++        if self._host != base_url:
++            return
++        carica["caricati"] = sorted(caricati)
++        carica["errore"] = errori[0] if errori else ""
++        carica["mancano"] = [f["profilo"] for f in filamenti if chiave_filamento(f) not in caricati]
+ 
+     def _run(self):
+@@ -1023,10 +1060,41 @@
+                 self._thread.start()
+ 
++    def _refresh_connection(self):
++        """Resolve the selected print host on the GUI thread; keep material state per Moonraker host."""
++        impostazioni = self._settings()
++        mappings = impostazioni.get("moonraker_hosts") or {}
++        selected = host_da_preset()
++        host = resolve_moonraker_host(selected, mappings) if selected else (
++            "" if mappings else normalize_host(impostazioni.get("host")))
++        if self._connection_initialized and host == self._host:
++            return False
++        saved = impostazioni.get("caricati_per_host")
++        cache = {normalize_host(key): list(value) for key, value in saved.items()
++                 if normalize_host(key) and isinstance(value, list)} if isinstance(saved, dict) else {}
++        legacy_host = resolve_moonraker_host(impostazioni.get("host"), mappings)
++        if legacy_host:
++            value = impostazioni.get("caricati")
++            cache[legacy_host] = list(value) if isinstance(value, list) else []
++        if self._host and self._letti:
++            cache[self._host] = list(self._carica["caricati"])
++        caricati = list(cache.get(host, [])) if host else []
++        # Invalidate before replacing state, so a poller cannot pair the new host with old materials.
++        self._host = ""
++        self._connection_initialized = True
++        self._stato = {"connessa": False, "unita": [], "errore": "", "ora": ""}
++        self._da_caricare = []
++        self._letti = True
++        self._riprova = {}
++        self._errori = {}
++        self._aperta_da_sola = False
++        self._carica = {"adl": None, "caricati": caricati, "mancano": [], "errore": ""}
++        self._host = host
++        self._salva(host=host, caricati=caricati, caricati_per_host=cache)
++        self._wake.set()
++        return True
++
+     def _avvia(self):
+         """Prima lettura e poller. L'indirizzo è quello della connessione della stampante in Orca."""
+-        host = host_da_preset() or normalize_host(self._settings()["host"])
+-        if host:
+-            self._host = host
+-            self._salva(host=host)
++        self._refresh_connection()
+         if self._poller_running():
+             self._wake.set()
+@@ -1091,5 +1159,8 @@
+             return
+         try:
+-            if comando == "applica":
++            if comando == "stato":
++                self._refresh_connection()
++                self._aggiorna_filamenti()
++            elif comando == "applica":
+                 nome = str(dati.get("nome") or "").strip()[:20]
+                 if nome and nome.isprintable():
+@@ -1144,4 +1215,5 @@
+         try:
+             if comando == "stato":
++                self._refresh_connection()
+                 self._aggiorna_filamenti()
+             elif comando == "adl":
+@@ -1153,4 +1225,6 @@
+                     esito = "link"
+             elif comando == "carica":
++                self._refresh_connection()
++                self._aggiorna_filamenti()
+                 self._riprova.clear()
+                 self._errori.clear()
+@@ -1169,5 +1243,5 @@
+         manca = bool(self._carica["mancano"]) and self._carica["adl"] is False
+         return dict(self._stato, comando="stato", versione=VERSIONE, da_caricare=len(self._carica["mancano"]) if manca else 0,
+-                    host=(self._host or normalize_host(impostazioni["host"])).replace("http://", ""),
++                    host=self._host.replace("http://", ""),
+                     lingua=impostazioni.get("lingua") if impostazioni.get("lingua") in ("it", "en", "de", "fr", "es") else lingua_orca())
+ 
+@@ -1194,4 +1268,5 @@
+             self._avvia()
+         elif comando == "sincronizza":
++            self._refresh_connection()
+             try:
+                 self._sync_now(timeout=FOREGROUND_TIMEOUT_SECONDS)
+@@ -1214,4 +1289,5 @@
+                 print(f"[CFS] {exc}")
+         elif comando == "stato":
++            self._refresh_connection()
+             self._aggiorna_filamenti()
+             # Un filamento non si può caricare (manca ADL Script): la schermata si apre da sola, una volta.
+@@ -1219,10 +1295,4 @@
+                 self._aperta_da_sola = True
+                 self._apri_stampante()
+-            # Cambio di stampante: si rilegge solo l'indirizzo dal profilo, senza rete.
+-            host = host_da_preset()
+-            if host and host != self._host:
+-                self._host = host
+-                self._salva(host=host)
+-                self._wake.set()
+         if self.pannello is not None:
+             self.pannello.post(self._stato_per_pannello())
+@@ -1231,12 +1301,9 @@
+         if event != orca.LifecycleEvent.DeviceSelected:
+             return
+-        host = normalize_host(getattr(context, "name", "") or getattr(context, "device_id", ""))
+-        if not host:
+-            return
+-        self._salva(host=host)
+         self._avvia()
+ 
+     def execute(self):
+         try:
++            self._refresh_connection()
+             self._apri_pannello()
+             summary = self._start_in_foreground()
