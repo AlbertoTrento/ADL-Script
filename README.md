@@ -123,7 +123,7 @@ CFS_LIST_MATERIALS
 CFS_REMOVE_MATERIAL ID=90001
 ```
 
-Sono esempi: scegliere una base esistente e dati adatti al filamento. `~` sostituisce gli spazi e il colore usa sei cifre esadecimali senza `#`. I nuovi ID sono compresi tra `90001` e `99999`. ADL Screen richiede un riavvio per visualizzare i nuovi materiali. La rimozione del modulo conserva l'elenco personalizzato.
+Sono esempi: scegliere una base esistente e dati adatti al filamento. `~` sostituisce gli spazi e il colore usa sei cifre esadecimali senza `#`. I nuovi ID sono compresi tra `90001` e `99999`. Dopo ogni materiale aggiunto o tolto ADL Script mette la versione anti-aggiornamento nel database, lo copia nella copia di avvio e riavvia la stampante dopo 15 secondi, così lo schermo mostra subito i nuovi materiali; se ne arrivano più di fila, il riavvio è uno solo. Durante la stampa i comandi non partono. La rimozione del modulo conserva l'elenco personalizzato.
 
 ### Cambiare filamento manualmente
 
