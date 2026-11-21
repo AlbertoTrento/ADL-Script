@@ -27,6 +27,10 @@ CUSTOM_FILE="${CFS_CUSTOM_FILE:-/usr/data/printer_data/config/Helper-Script/cfs-
 EXPORT_FILE="${CFS_EXPORT_FILE:-/usr/data/printer_data/config/Helper-Script/cfs-printer-materials.json}"
 BACKUP_DIR="${CFS_BACKUP_DIR:-/usr/data/backup-cfs-materials}"
 JQ="${JQ:-jq}"
+# Come CFS Forge: versione alta perché il firmware non rimpiazzi il database, copia di avvio, poi riavvio.
+VER_PREVENT="9999999999"
+DEFDATA_FILE="${CFS_DEFDATA_FILE:-/usr/data/creality/userdata/config/material_database.json}"
+REBOOT_DELAY="${CFS_REBOOT_DELAY:-15}"
 ID_FIRST=90001
 ID_LAST=99999
 
@@ -328,12 +332,34 @@ cmd_export() {
   mv "$EXPORT_FILE.new" "$EXPORT_FILE"
 }
 
+# Come CFS Forge dopo ogni scrittura: versione alta nel database (il firmware non lo rimpiazza),
+# copia di avvio in defData, poi riavvio della stampante perché lo schermo rilegga i filamenti.
+# Un solo riavvio anche se arrivano più filamenti di fila: parte dopo $REBOOT_DELAY secondi.
+apply_to_printer() {
+  "$JQ" --arg v "$VER_PREVENT" '.result.version = $v' "$DB_FILE" > "$DB_FILE.new" || { rm -f "$DB_FILE.new"; die "could not write the database version"; }
+  staged_ok "$DB_FILE" || { rm -f "$DB_FILE.new"; die "the generated file is not valid, nothing was changed"; }
+  chmod 644 "$DB_FILE.new"
+  mv "$DB_FILE.new" "$DB_FILE"
+  mkdir -p "$(dirname "$DEFDATA_FILE")"
+  cp -p "$DB_FILE" "$DEFDATA_FILE"
+  sync
+  if [ ! -f /tmp/cfs-materials-reboot ]; then
+    touch /tmp/cfs-materials-reboot
+    if command -v setsid > /dev/null 2>&1; then
+      setsid sh -c "sleep $REBOOT_DELAY; sync; reboot" > /dev/null 2>&1 < /dev/null &
+    else
+      nohup sh -c "sleep $REBOOT_DELAY; sync; reboot" > /dev/null 2>&1 < /dev/null &
+    fi
+  fi
+  echo "The printer restarts in $REBOOT_DELAY seconds so the screen shows the filaments."
+}
+
 action="${1:-}"
 [ "$#" -gt 0 ] && shift
 case "$action" in
-  add) cmd_add "$@"; cmd_export;;
-  remove) cmd_remove "$@"; cmd_export;;
-  remove-all) cmd_remove_all; cmd_export;;
+  add) cmd_add "$@"; cmd_export; apply_to_printer;;
+  remove) cmd_remove "$@"; cmd_export; apply_to_printer;;
+  remove-all) cmd_remove_all; cmd_export; apply_to_printer;;
   list) cmd_list;;
   reapply) cmd_reapply; cmd_export;;
   export) cmd_export;;
