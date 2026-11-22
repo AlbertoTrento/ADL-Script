@@ -332,6 +332,28 @@ cmd_export() {
   mv "$EXPORT_FILE.new" "$EXPORT_FILE"
 }
 
+# Rilegge il database e la copia di avvio appena scritti ed elenca ogni filamento con la sua presenza
+# nei due file, segnando quelli che mancano in uno dei due. Se i file non coincidono si ferma con
+# l'errore e la stampante non si riavvia: una scrittura a metà non deve passare inosservata.
+check_written() {
+  "$JQ" -e '.result.list | type == "array"' "$DB_FILE" > /dev/null 2>&1 || die "$DB_FILE cannot be read back after writing."
+  "$JQ" -e '.result.list | type == "array"' "$DEFDATA_FILE" > /dev/null 2>&1 || die "the boot copy $DEFDATA_FILE cannot be read back after writing. The printer is not restarted."
+  echo "Written: $DB_FILE ($("$JQ" '.result.list | length' "$DB_FILE") filaments)"
+  echo "Written: $DEFDATA_FILE ($("$JQ" '.result.list | length' "$DEFDATA_FILE") filaments)"
+  echo "Filaments (database / boot copy):"
+  "$JQ" -r --slurpfile d "$DEFDATA_FILE" '
+    [.result.list[].base] as $a | [$d[0].result.list[].base] as $b
+    | ($a + $b | unique_by(.id))[]
+    | .id as $i
+    | (if any($a[]; .id == $i) then "yes" else "NO" end) as $in_db
+    | (if any($b[]; .id == $i) then "yes" else "NO" end) as $in_def
+    | "  \(.id) \(.brand) \(.name): \($in_db) / \($in_def)\(if $in_db == "NO" or $in_def == "NO" then "   <-- MISSING" else "" end)"
+  ' "$DB_FILE"
+  "$JQ" -e --slurpfile d "$DEFDATA_FILE" '. == $d[0]' "$DB_FILE" > /dev/null 2>&1 \
+    || die "$DB_FILE and the boot copy $DEFDATA_FILE are NOT the same (see the list above). The printer is not restarted."
+  echo "Check OK: database and boot copy are the same."
+}
+
 # Come CFS Forge dopo ogni scrittura: versione alta nel database (il firmware non lo rimpiazza),
 # copia di avvio in defData, poi riavvio della stampante perché lo schermo rilegga i filamenti.
 # Un solo riavvio anche se arrivano più filamenti di fila: parte dopo $REBOOT_DELAY secondi.
@@ -340,9 +362,10 @@ apply_to_printer() {
   staged_ok "$DB_FILE" || { rm -f "$DB_FILE.new"; die "the generated file is not valid, nothing was changed"; }
   chmod 644 "$DB_FILE.new"
   mv "$DB_FILE.new" "$DB_FILE"
-  mkdir -p "$(dirname "$DEFDATA_FILE")"
-  cp -p "$DB_FILE" "$DEFDATA_FILE"
+  mkdir -p "$(dirname "$DEFDATA_FILE")" || die "$DB_FILE was written, the boot copy $DEFDATA_FILE was NOT (its folder cannot be created). The printer is not restarted."
+  cp -p "$DB_FILE" "$DEFDATA_FILE" || die "$DB_FILE was written, the boot copy $DEFDATA_FILE was NOT (copy failed). The printer is not restarted."
   sync
+  check_written
   if [ ! -f /tmp/cfs-materials-reboot ]; then
     touch /tmp/cfs-materials-reboot
     if command -v setsid > /dev/null 2>&1; then
