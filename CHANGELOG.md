@@ -17,6 +17,7 @@ Prima versione di **ADL Script**, la versione di AlbertoTrento del CFS Power Scr
 ### Corretto
 - **Filamenti personalizzati:** dopo ogni filamento aggiunto o tolto il database riceve la versione anti-aggiornamento, viene copiato nella copia di avvio e la stampante si riavvia dopo 15 secondi, così lo schermo mostra subito i filamenti nuovi (come CFS Forge). Mai durante la stampa.
 - **KAMP:** pulizia ugello con le temperature di stampa, senza aspettare che il piatto si raffreddi; dopo il caricamento del CFS l'ugello torna alla temperatura di stampa prima dello spurgo.
+- **Pannello CFS e logo ADL spariti dopo un aggiornamento di Fluidd.** L'aggiornamento sostituisce tutta la cartella di Fluidd e il controllo dello script cercava proprio i file appena cancellati, quindi non li rimetteva. Ora l'installazione lascia un segno nella cartella `Helper-Script` e lo script di avvio `S99ADL-Fluidd` rimette pannello e logo a ogni accensione della stampante (anche lo script lo fa a ogni apertura). Chi li ha già persi: `[Customize & PowerScreen] → 7` per il pannello; il logo ADL torna da solo se il tema ADL è quello scelto in Fluidd.
 - **Pannello CFS di Fluidd:** riconosce gli id materiale a 6 cifre con l'1 davanti (`106003` invece di `06003`).
 
 ## v1.3.9

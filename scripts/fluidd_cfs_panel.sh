@@ -71,6 +71,8 @@ function apply_cfs_panel(){
     error_msg "Unable to update the Fluidd index.html file!"
     return
   fi
+  touch "$FLUIDD_CFS_PANEL_MARK"
+  install_fluidd_restore_service
   ok_msg "CFS Panel for Fluidd has been ${done_word} successfully!"
   echo -e "   Close every Fluidd tab and open it again (twice if it is not there yet:"
   echo -e "   the browser updates its cached copy of Fluidd first)."
@@ -126,7 +128,7 @@ function remove_fluidd_cfs_panel(){
         echo -e "${white}"
         echo -e "Info: Removing the CFS panel from the Fluidd page..."
         remove_cfs_panel_tag
-        rm -f "$FLUIDD_CFS_PANEL_FILE"
+        rm -f "$FLUIDD_CFS_PANEL_FILE" "$FLUIDD_CFS_PANEL_MARK"
         ok_msg "CFS Panel for Fluidd has been removed successfully!"
         echo -e "   Close every Fluidd tab and open it again."
         return;;

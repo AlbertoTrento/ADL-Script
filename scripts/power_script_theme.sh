@@ -56,6 +56,8 @@ function copy_power_script_theme_files(){
   cp "$FLUIDD_THEME_LOGO_URL" "$FLUIDD_THEME_LOGO_FILE"
   # Il server web di Fluidd deve poterlo leggere, altrimenti il logo sparisce (errore 403).
   chmod 644 "$FLUIDD_THEME_LOGO_FILE"
+  touch "$FLUIDD_THEME_MARK"
+  install_fluidd_restore_service
 }
 
 # Installs the files, adds the preset and selects it. Used by the menu, by the reapply

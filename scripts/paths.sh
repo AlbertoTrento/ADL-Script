@@ -196,6 +196,13 @@ function set_paths() {
   FLUIDD_CFS_PANEL_FILE="${USR_DATA}/fluidd/power-cfs-panel.js"
   FLUIDD_CFS_PANEL_URL="${HS_FILES}/fluidd-cfs-panel/power-cfs-panel.js"
 
+  # Un aggiornamento di Fluidd sostituisce tutta la sua cartella e porta via pannello CFS e logo ADL.
+  # Questi segni restano nella cartella config e dicono che erano installati; lo script di avvio li rimette.
+  FLUIDD_CFS_PANEL_MARK="${HS_CONFIG_FOLDER}/.fluidd-cfs-panel"
+  FLUIDD_THEME_MARK="${HS_CONFIG_FOLDER}/.fluidd-adl-theme"
+  FLUIDD_RESTORE_SERVICE="${INITD_FOLDER}/S99ADL-Fluidd"
+  FLUIDD_RESTORE_SERVICE_URL="${HS_FILES}/fluidd-cfs-panel/S99ADL-Fluidd"
+
 }
 
 function set_permissions() {

@@ -208,6 +208,45 @@ function migrate_fluidd_power_theme(){
   fi
 }
 
+# Lo script di avvio che rimette pannello CFS e logo ADL dopo un aggiornamento di Fluidd.
+function install_fluidd_restore_service(){
+  [ -f "$FLUIDD_RESTORE_SERVICE_URL" ] || return 0
+  cmp -s "$FLUIDD_RESTORE_SERVICE_URL" "$FLUIDD_RESTORE_SERVICE" || cp "$FLUIDD_RESTORE_SERVICE_URL" "$FLUIDD_RESTORE_SERVICE"
+  chmod 755 "$FLUIDD_RESTORE_SERVICE"
+}
+
+# Un aggiornamento di Fluidd sostituisce tutta la sua cartella: il pannello CFS e il logo ADL
+# spariscono. I segni nella cartella config dicono che erano installati: qui si rimettono i file,
+# poi migrate_fluidd_cfs_panel rimette il pannello nella pagina. Gira all'avvio della stampante
+# (S99ADL-Fluidd) e a ogni apertura di ADL Script.
+function restore_fluidd_files(){
+  [ -f "$FLUIDD_FOLDER/index.html" ] || return 0
+  if [ -f "$FLUIDD_CFS_PANEL_MARK" ] && [ ! -f "$FLUIDD_CFS_PANEL_FILE" ] && [ -f "$FLUIDD_CFS_PANEL_URL" ]; then
+    echo -e "${white}Info: Fluidd was updated, putting the CFS panel back..."
+    cp "$FLUIDD_CFS_PANEL_URL" "$FLUIDD_CFS_PANEL_FILE"
+    chmod 644 "$FLUIDD_CFS_PANEL_FILE"
+  fi
+  if [ -f "$FLUIDD_THEME_MARK" ] && [ ! -f "$FLUIDD_THEME_LOGO_FILE" ] && [ -f "$FLUIDD_THEME_LOGO_URL" ]; then
+    echo -e "${white}Info: Fluidd was updated, putting the ADL logo back..."
+    copy_power_script_theme_files
+  fi
+}
+
+# Installazioni fatte prima dei segni: il segno si mette se il file c'e' ancora o, per il tema,
+# se in Fluidd e' scelto il logo ADL (la scelta resta in Moonraker anche quando il file sparisce).
+function migrate_fluidd_marks(){
+  [ -f "$FLUIDD_FOLDER/index.html" ] || return 0
+  [ -f "$FLUIDD_CFS_PANEL_FILE" ] && touch "$FLUIDD_CFS_PANEL_MARK"
+  if [ -f "$FLUIDD_THEME_LOGO_FILE" ] || \
+     "$CURL" -s "localhost:7125/server/database/item?namespace=fluidd&key=uiSettings.theme" 2>/dev/null | grep -q '"logo_adl.svg"'; then
+    touch "$FLUIDD_THEME_MARK"
+  fi
+  if [ -f "$FLUIDD_CFS_PANEL_MARK" ] || [ -f "$FLUIDD_THEME_MARK" ]; then
+    install_fluidd_restore_service
+  fi
+  restore_fluidd_files
+}
+
 # A Fluidd update replaces index.html and the CFS panel tag disappears. Add it back and
 # refresh the panel when this version of the script brings a newer one.
 function migrate_fluidd_cfs_panel(){
@@ -240,6 +279,7 @@ function run_migrations(){
   migrate_stepper_y_gcode_max
   migrate_bed_fix_wipe
   migrate_bed_fix_mesh
+  migrate_fluidd_marks
   migrate_fluidd_logos
   migrate_fluidd_power_theme_to_adl
   migrate_fluidd_power_theme

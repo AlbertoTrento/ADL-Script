@@ -1,0 +1,27 @@
+#!/bin/sh
+# ADL Script: un aggiornamento di Fluidd sostituisce tutta la sua cartella e porta via il pannello CFS
+# e il logo ADL. A ogni avvio della stampante li rimette, se erano installati.
+
+restore_fluidd() {
+  HELPER_SCRIPT_FOLDER=/usr/data/helper-script
+  [ -d "$HELPER_SCRIPT_FOLDER/scripts" ] || return 0
+  for script in "$HELPER_SCRIPT_FOLDER/scripts/"*.sh; do . "$script"; done
+  set +e
+  set_paths
+  restore_fluidd_files
+  migrate_fluidd_cfs_panel
+}
+
+case "$1" in
+  start)
+    ( restore_fluidd ) > /dev/null 2>&1 &
+    ;;
+  stop|restart)
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit 0
