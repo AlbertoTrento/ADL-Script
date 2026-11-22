@@ -163,11 +163,28 @@ stage_remove() {
   fi
 }
 
+# The filament of the database that is the same as $1 brand, $2 name, $3 type ("id brand name"), or "".
+# Same brand and type, and the same words in the name, without capitals, symbols (™, brackets),
+# the brand, the type and "OrcaGen": "THE K5™ PETG M (Matte)", "THE K5 PETG M Matte" and
+# "OrcaGen THE K5 M Matte" of kexcelled are one filament. No regular expressions (see below).
+find_same() {
+  "$JQ" -r --arg br "$1" --arg n "$2" --arg t "$3" '
+    def words: ascii_downcase | explode
+      | map(if (. >= 97 and . <= 122) or (. >= 48 and . <= 57) or . == 43 then . else 32 end)
+      | implode | split(" ") | map(select(. != ""));
+    def key($b; $t; $n): ($b | words) as $bw | ($t | words) as $tw
+      | [($bw | join(" ")), ($tw | join(" ")),
+         ($n | words | map(. as $w | select($w != "orcagen" and (($bw + $tw) | index([$w])) == null)) | join(" "))];
+    key($br; $t; $n) as $k
+    | [.result.list[].base | select(key(.brand // ""; .meterialType // ""; .name // "") == $k)
+       | "\(.id) \(.brand) \(.name)"] | first // ""' "$DB_FILE"
+}
+
 # ---------- Commands ----------
 
 cmd_add() {
   [ "$#" -eq 8 ] || die "usage: add BASE BRAND NAME TYPE NOZZLE MIN MAX RRGGBB"
-  local base="$1" brand name type nozzle="$5" min="$6" max="$7" color="$8" id last_db last_custom
+  local base="$1" brand name type nozzle="$5" min="$6" max="$7" color="$8" id last_db last_custom same
   check_text "$2" "The brand"
   check_text "$3" "The name"
   check_text "$4" "The material type"
@@ -188,6 +205,8 @@ cmd_add() {
   "$JQ" -e --arg b "$base" '.result.list | map(.base.id) | index($b) != null' "$DB_FILE" > /dev/null || die "the base filament $base is not in the database"
   "$JQ" -e --arg t "$type" '[.result.list[].base.meterialType] | index($t) != null' "$DB_FILE" > /dev/null || die "unknown material type: $type"
   "$JQ" -e --arg br "$brand" --arg n "$name" '.result.list | map(select(.base.brand == $br and .base.name == $n)) | length == 0' "$DB_FILE" > /dev/null || die "$brand $name already exists"
+  same=$(find_same "$brand" "$name" "$type" 2>/dev/null) || same=""
+  [ -z "$same" ] || die "$brand $name already exists in the printer as $same"
 
   # No regular expressions here: the jq of the K1C is built without them.
   last_db=$("$JQ" -r '[.result.list[].base.id | select(startswith("9") and length == 5) | (tonumber? // empty)] | (max // 0)' "$DB_FILE") || die "could not read the ids of the database"
