@@ -20,6 +20,7 @@ Prima versione di **ADL Script**, la versione di AlbertoTrento del CFS Power Scr
 - **Filamenti personalizzati doppi.** Un filamento che la stampante ha già non viene aggiunto una seconda volta, anche se scritto un po' diverso: stessa marca, stesso materiale e stesse parole nel nome, senza contare maiuscole, simboli come ™ e parentesi, la marca o il materiale ripetuti nel nome e la parola «OrcaGen». Il messaggio dice quale c'è già. È la stessa regola del plugin CFS e di Creality Filament Loader.
 - **Pannello CFS e logo ADL spariti dopo un aggiornamento di Fluidd.** L'aggiornamento sostituisce tutta la cartella di Fluidd e il controllo dello script cercava proprio i file appena cancellati, quindi non li rimetteva. Ora l'installazione lascia un segno nella cartella `Helper-Script` e lo script di avvio `S99ADL-Fluidd` rimette pannello e logo a ogni accensione della stampante (anche lo script lo fa a ogni apertura). Chi li ha già persi: `[Customize & PowerScreen] → 7` per il pannello; il logo ADL torna da solo se il tema ADL è quello scelto in Fluidd.
 - **Pannello CFS di Fluidd:** riconosce gli id materiale a 6 cifre con l'1 davanti (`106003` invece di `06003`).
+- **Logo Creality all'avvio.** Quando parte lo schermo l'animazione si ferma e sotto ricompariva il logo fisso Creality. Ora lo script mette al suo posto il logo ADL (l'originale resta salvato nella cartella di backup), così dall'accensione allo schermo si vede sempre ADL. Si applica alla prossima apertura dello script.
 
 ## v1.3.9
 

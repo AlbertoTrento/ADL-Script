@@ -165,7 +165,12 @@ function set_paths() {
   BOOT_ANIMATION_FOLDER="/etc/boot-display"
   BOOT_ANIMATION_URL="${HS_FILES}/boot-animation"
   BOOT_ANIMATION_BACKUP="${HS_BACKUP_FOLDER}/boot-display-original.tar.gz"
-  BOOT_ANIMATION_MARKER="${HELPER_SCRIPT_FOLDER}/.boot_animation_installed_v5"
+  BOOT_ANIMATION_MARKER="${HELPER_SCRIPT_FOLDER}/.boot_animation_installed_v6"
+  # Immagine fissa che il servizio Creality S11jpeg_display_shell mostra all'accensione e che torna
+  # visibile quando ADL Screen ferma l'animazione: viene sostituita con il logo ADL.
+  BOOT_LOGO_FILE="/etc/logo/creality_landscape_rot180_480x800.jpg"
+  BOOT_LOGO_URL="${HS_FILES}/boot-logo/adl_480x800.jpg"
+  BOOT_LOGO_BACKUP="${HS_BACKUP_FOLDER}/creality_landscape_rot180_480x800.jpg"
 
   # Creality Web Interface #
   CREALITY_WEB_FILE="/usr/bin/web-server"
