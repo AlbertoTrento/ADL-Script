@@ -1,5 +1,5 @@
 # Descrizioni in italiano delle macro dei file che lo script COPIA nella configurazione
-# (gcode_macro.cfg, box.cfg, camera-settings.cfg). Una riga per macro: file|MACRO|descrizione vecchia|descrizione nuova.
+# (gcode_macro.cfg, box.cfg, camera-settings.cfg, e Start_Print.cfg quando e' una copia). Una riga per macro: file|MACRO|descrizione vecchia|descrizione nuova.
 # La migrazione cambia una descrizione solo se sulla stampante c'e' ancora quella vecchia
 # (vuota = la macro non aveva descrizione): quelle cambiate a mano restano come sono.
 camera-settings.cfg|CAM_SETTINGS|Show current camera settings|Mostra le impostazioni attuali della camera
@@ -71,3 +71,7 @@ gcode_macro.cfg|CAMERA_OFF|Turn the camera off (stops its service and its USB vi
 gcode_macro.cfg|CAMERA_ON|Turn the camera on (starts its service again)|Accende la camera
 gcode_macro.cfg|PID_HOTEND|Start Hotend PID|Calibrazione PID dell'ugello
 gcode_macro.cfg|STRESS_TEST|Stress Test|Test di resistenza: movimenti veloci ripetuti su tutti gli assi
+Start_Print.cfg|KAMP_BED_MESH_SETTINGS|Configure Bed Mesh type|Sceglie il tipo di mesh del piatto: adattiva (solo l'area del pezzo) o completa
+Start_Print.cfg|KAMP_PURGE_LINE_SETTINGS|Configure Purge Line type|Sceglie il tipo di linea di spurgo: adattiva (vicino al pezzo) o classica
+Start_Print.cfg|START_PRINT||Avvio stampa: chiamata dallo slicer all'inizio (riscaldamento, CFS, mesh, spurgo)
+Start_Print.cfg|ADAPT_PURGE_MOD||Spurgo prima della stampa: la chiama START_PRINT

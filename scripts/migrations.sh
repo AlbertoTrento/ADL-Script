@@ -280,7 +280,9 @@ function migrate_cfs_custom_filaments(){
 function migrate_macro_descriptions(){
   local list="${HS_FILES}/macro-descriptions/descrizioni.txt" file
   [ -f "$list" ] || return 0
-  for file in "$KLIPPER_CONFIG_FOLDER/gcode_macro.cfg" "$KLIPPER_CONFIG_FOLDER/box.cfg" "$CAMERA_SETTINGS_FILE"; do
+  # Start_Print.cfg di KAMP di solito e' un collegamento al file dello script e si aggiorna da solo;
+  # diventa una copia se viene salvato dall'editor di Fluidd, e allora va sistemato qui.
+  for file in "$KLIPPER_CONFIG_FOLDER/gcode_macro.cfg" "$KLIPPER_CONFIG_FOLDER/box.cfg" "$CAMERA_SETTINGS_FILE" "$KAMP_FOLDER/Start_Print.cfg"; do
     [ -f "$file" ] && [ ! -L "$file" ] || continue
     awk -v list="$list" -v base="$(basename "$file")" '
       function flush(   i, trovata, val) {
