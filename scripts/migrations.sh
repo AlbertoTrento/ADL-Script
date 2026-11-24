@@ -272,6 +272,67 @@ function migrate_cfs_custom_filaments(){
   sh "$CFS_MATERIALS_SCRIPT" reapply || true
 }
 
+# Descrizioni in italiano delle macro nei file che lo script copia nella configurazione
+# (gcode_macro.cfg, box.cfg, camera-settings.cfg): l'elenco e' in files/macro-descriptions.
+# Una descrizione cambia solo se e' ancora quella originale (o se la macro non ne aveva):
+# quelle scritte a mano restano. Il resto dei file non viene toccato. Klipper non viene
+# riavviato: le descrizioni nuove si vedono dal prossimo riavvio di Klipper.
+function migrate_macro_descriptions(){
+  local list="${HS_FILES}/macro-descriptions/descrizioni.txt" file
+  [ -f "$list" ] || return 0
+  for file in "$KLIPPER_CONFIG_FOLDER/gcode_macro.cfg" "$KLIPPER_CONFIG_FOLDER/box.cfg" "$CAMERA_SETTINGS_FILE"; do
+    [ -f "$file" ] && [ ! -L "$file" ] || continue
+    awk -v list="$list" -v base="$(basename "$file")" '
+      function flush(   i, trovata, val) {
+        if (cur == "") return
+        trovata = 0
+        for (i = 1; i <= nb; i++) {
+          if (buf[i] ~ /^description[ \t]*:/) {
+            trovata = 1
+            val = buf[i]
+            sub(/^description[ \t]*:[ \t]*/, "", val)
+            sub(/[ \t\r]+$/, "", val)
+            if (val == vecchio[cur]) buf[i] = "description: " nuovo[cur]
+          }
+        }
+        if (!trovata && vecchio[cur] == "") print "description: " nuovo[cur]
+        for (i = 1; i <= nb; i++) print buf[i]
+        cur = ""
+        nb = 0
+      }
+      BEGIN {
+        while ((getline riga < list) > 0) {
+          if (riga ~ /^#/ || riga == "") continue
+          if (split(riga, p, "|") < 4 || p[1] != base) continue
+          nuovo[p[2]] = p[4]
+          vecchio[p[2]] = p[3]
+        }
+        cur = ""
+        nb = 0
+      }
+      /^\[/ {
+        flush()
+        print
+        if (match($0, /^\[gcode_macro[ \t]+/)) {
+          nome = substr($0, RLENGTH + 1)
+          sub(/\].*$/, "", nome)
+          gsub(/[ \t]/, "", nome)
+          nome = toupper(nome)
+          if (nome in nuovo) cur = nome
+        }
+        next
+      }
+      { if (cur != "") buf[++nb] = $0; else print }
+      END { flush() }
+    ' "$file" > "$file.new" || { rm -f "$file.new"; continue; }
+    if [ -s "$file.new" ] && ! cmp -s "$file" "$file.new"; then
+      echo -e "${white}Info: Updating the macro descriptions in $(basename "$file")..."
+      cat "$file.new" > "$file"
+    fi
+    rm -f "$file.new"
+  done
+}
+
 function run_migrations(){
   migrate_update_manager_name
   migrate_update_manager_entry
@@ -285,4 +346,5 @@ function run_migrations(){
   migrate_fluidd_power_theme
   migrate_fluidd_cfs_panel
   migrate_cfs_custom_filaments
+  migrate_macro_descriptions
 }

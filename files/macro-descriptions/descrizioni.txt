@@ -1,0 +1,73 @@
+# Descrizioni in italiano delle macro dei file che lo script COPIA nella configurazione
+# (gcode_macro.cfg, box.cfg, camera-settings.cfg). Una riga per macro: file|MACRO|descrizione vecchia|descrizione nuova.
+# La migrazione cambia una descrizione solo se sulla stampante c'e' ancora quella vecchia
+# (vuota = la macro non aveva descrizione): quelle cambiate a mano restano come sono.
+camera-settings.cfg|CAM_SETTINGS|Show current camera settings|Mostra le impostazioni attuali della camera
+camera-settings.cfg|CAM_BRIGHTNESS|min=-64 / max=64|Luminosità (da -64 a 64)
+camera-settings.cfg|CAM_CONTRAST|min=0 / max=64|Contrasto (da 0 a 64)
+camera-settings.cfg|CAM_SATURATION|min=0 / max=128|Saturazione (da 0 a 128)
+camera-settings.cfg|CAM_HUE|min=-40 / max=40|Tonalità (da -40 a 40)
+camera-settings.cfg|CAM_WHITE_BALANCE_TEMPERATURE_AUTO|disable=0 / enable=1|Bilanciamento del bianco automatico (0 no, 1 sì)
+camera-settings.cfg|CAM_GAMMA|min=72 / max=500|Gamma (da 72 a 500)
+camera-settings.cfg|CAM_GAIN|min=0 / max=100|Guadagno (da 0 a 100)
+camera-settings.cfg|CAM_POWER_LINE_FREQUENCY|min=0 / max=2|Frequenza della rete elettrica contro lo sfarfallio (0 spento, 1 = 50 Hz, 2 = 60 Hz)
+camera-settings.cfg|CAM_WHITE_BALANCE_TEMPERATURE|min=2800 / max=6500|Bilanciamento del bianco manuale (da 2800 a 6500 K)
+camera-settings.cfg|CAM_SHARPNESS|min=0 / max=6|Nitidezza (da 0 a 6)
+camera-settings.cfg|CAM_BACKLIGHT_COMPENSATION|min=0 / max=2|Compensazione controluce (da 0 a 2)
+camera-settings.cfg|CAM_EXPOSURE_AUTO|manual=1 / auto=3|Esposizione: 1 manuale, 3 automatica
+camera-settings.cfg|CAM_EXPOSURE_AUTO_PRIORITY|disable=0 / enable=1|Priorità dell'esposizione automatica (0 no, 1 sì)
+box.cfg|BOX_CHECK_MATERIAL||Controllo del filamento nel CFS: la chiamano le macro di carico
+box.cfg|BOX_LOAD_MATERIAL_WITH_MATERIAL||Cambia filamento: taglia e ritira quello caricato, poi carica il nuovo dal CFS
+box.cfg|BOX_LOAD_MATERIAL_WITHOUT_MATERIAL||Carica un filamento dal CFS quando l'ugello è vuoto
+box.cfg|BOX_QUIT_MATERIAL||Scarica il filamento: lo taglia e lo riporta nel CFS
+box.cfg|BOX_INFO_REFRESH||Rilegge uno slot del CFS (presenza bobina e chip RFID)
+gcode_macro.cfg|PRINTER_PARAM||Contiene solo le impostazioni della stampante, non fa niente
+gcode_macro.cfg|AUTOTUNE_SHAPERS||Calibrazione automatica dell'input shaper sugli assi X e Y
+gcode_macro.cfg|LOAD_MATERIAL_CLOSE_FAN2||Spegne la ventola laterale durante il carico
+gcode_macro.cfg|LOAD_MATERIAL_RESTORE_FAN2||Riaccende la ventola laterale dopo il carico
+gcode_macro.cfg|SET_E_MIN_CURRENT||Abbassa la corrente del motore estrusore
+gcode_macro.cfg|RESTORE_E_CURRENT||Rimette la corrente normale del motore estrusore
+gcode_macro.cfg|LOAD_MATERIAL||Carica il filamento a mano (bobina esterna): scalda ed estrude 80 mm
+gcode_macro.cfg|QUIT_MATERIAL||Scarica il filamento a mano (bobina esterna)
+gcode_macro.cfg|QMODE||Modalità silenziosa: riduce velocità e accelerazioni
+gcode_macro.cfg|QMODE_EXIT||Esce dalla modalità silenziosa
+gcode_macro.cfg|M204||Accelerazione dallo slicer
+gcode_macro.cfg|M205||Velocità agli angoli dallo slicer
+gcode_macro.cfg|M106||Comando ventole dello slicer
+gcode_macro.cfg|M107||Comando spegnimento ventole dello slicer
+gcode_macro.cfg|M141|Set Chamber temperature with slicers|Temperatura della camera dallo slicer
+gcode_macro.cfg|M900||Pressure advance dallo slicer
+gcode_macro.cfg|WAIT_TEMP_START||Inizio attesa temperatura (ventola al massimo)
+gcode_macro.cfg|WAIT_TEMP_END||Fine attesa temperatura
+gcode_macro.cfg|PRINT_CALIBRATION||Calibrazione Creality di livellamento e stampa di prova
+gcode_macro.cfg|FIRST_FLOOR_PAUSE_POSITION||Parcheggio della pausa dopo il primo strato
+gcode_macro.cfg|ACCURATE_G28||Home precisa di tutti gli assi, con l'asse Z più accurato
+gcode_macro.cfg|PRINT_PREPARED||Stato interno della preparazione stampa
+gcode_macro.cfg|PRINT_PREPARE_CLEAR||Stato interno della preparazione stampa
+gcode_macro.cfg|END_PRINT_POINT_WITHOUT_LIFTING||Parcheggio di fine stampa senza alzare Z
+gcode_macro.cfg|END_PRINT_POINT||Parcheggio di fine stampa: la chiama END_PRINT
+gcode_macro.cfg|END_PRINT||Fine stampa: chiamata dallo slicer alla fine (parcheggio, spegne motori e riscaldamento)
+gcode_macro.cfg|END_PRINT_NO_M84||Parte di END_PRINT e CANCEL_PRINT
+gcode_macro.cfg|FIRST_FLOOR_PAUSE|Pause the first floor print|Pausa dopo il primo strato (dallo schermo Creality)
+gcode_macro.cfg|FIRST_FLOOR_RESUME|Resume the first floor print|Riprende dopo la pausa del primo strato
+gcode_macro.cfg|WAIT_PAUSE||Parcheggio durante l'attesa di una pausa
+gcode_macro.cfg|PAUSE|Pause the actual running print|Mette in pausa la stampa in corso
+gcode_macro.cfg|INPUTSHAPER||Misura le risonanze per l'input shaper (procedura Creality)
+gcode_macro.cfg|BEDPID||Calibrazione PID del piatto a 100 °C e salvataggio
+gcode_macro.cfg|TUNOFFINPUTSHAPER||Spegne l'input shaper durante le procedure del CFS
+gcode_macro.cfg|CANCEL_PRINT|Cancel the actual running print|Annulla la stampa in corso
+gcode_macro.cfg|G29||Mesh del piatto alla maniera Creality: la chiamano slicer e firmware
+gcode_macro.cfg|IF_NEED_HOME||Fa la home solo se serve: la chiamano altre macro
+gcode_macro.cfg|BOX_TEST_CLEAN||Test di fabbrica Creality: pulizia ugello ripetuta
+gcode_macro.cfg|BOX_TEST_CUT_MATERIAL_SCRIPT||Test di fabbrica Creality: taglio del filamento
+gcode_macro.cfg|BOX_TEST_CUT_AND_CLEAN||Test di fabbrica Creality: taglio e pulizia
+gcode_macro.cfg|BOX_TEST_TNNX||Test di fabbrica Creality: cambia tutti e quattro gli slot
+gcode_macro.cfg|EXTRUDE_TEST||Test di fabbrica Creality: estrusione e taglio ripetuti
+gcode_macro.cfg|PS_NOCFS_UNLOAD_FILAMENT|Cut and retract the filament|Taglia e ritira il filamento (senza CFS)
+gcode_macro.cfg|PS_NOCFS_LOAD_FILAMENT|Load, purge and clean the new filament|Carica, spurga e pulisce il filamento nuovo (senza CFS)
+gcode_macro.cfg|PS_NOCFS_CLEAN_BRUSH|Clean the nozzle on the brush|Pulisce l'ugello sulla spazzola (senza CFS)
+gcode_macro.cfg|RELOAD_CAMERA|Reload camera service|Riavvia il servizio della camera
+gcode_macro.cfg|CAMERA_OFF|Turn the camera off (stops its service and its USB video traffic; no timelapse photos while it is off)|Spegne la camera (niente foto del timelapse finché è spenta)
+gcode_macro.cfg|CAMERA_ON|Turn the camera on (starts its service again)|Accende la camera
+gcode_macro.cfg|PID_HOTEND|Start Hotend PID|Calibrazione PID dell'ugello
+gcode_macro.cfg|STRESS_TEST|Stress Test|Test di resistenza: movimenti veloci ripetuti su tutti gli assi

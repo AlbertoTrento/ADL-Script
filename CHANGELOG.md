@@ -13,6 +13,7 @@ Prima versione di **ADL Script**, la versione di AlbertoTrento del CFS Power Scr
 - **Pannello CFS di Fluidd in italiano e in inglese,** compresa la finestra Diagnostica CFS: segue la lingua scelta in Fluidd.
 - **Bobina esterna:** con il CFS escluso, all'avvio stampa il filamento infilato a mano viene portato all'ugello e spurgato con i comandi del firmware CFS; a fine stampa niente `BOX_END`.
 - **Numero di versione nel menu** con le modifiche dopo l'ultima versione (`v1.4.0-1`, `v1.4.0-2`...).
+- **Descrizioni delle macro in italiano** (quelle che Fluidd mostra accanto al nome). Nei file già installati cambiano solo le descrizioni originali: quelle scritte a mano restano. Si vedono dal primo riavvio di Klipper dopo l'apertura dello script.
 
 ### Corretto
 - **Filamenti personalizzati:** dopo ogni filamento aggiunto o tolto il database riceve la versione anti-aggiornamento, viene copiato nella copia di avvio e la stampante si riavvia dopo 15 secondi, così lo schermo mostra subito i filamenti nuovi (come CFS Forge). Mai durante la stampa.
