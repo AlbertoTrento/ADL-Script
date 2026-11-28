@@ -363,6 +363,21 @@ function migrate_macro_descriptions(){
   done
 }
 
+# Il servizio Git Backup installato prima teneva la cartella in IFS e "restart" non fermava il backup
+# vecchio. Lo rimette dalla versione corretta (con la sua riga "source" del file .env) e lo riavvia,
+# cosi' resta un solo backup attivo. Non tocca la stampa ne' Klipper.
+function migrate_git_backup_service(){
+  local service="$INITD_FOLDER/S52Git-Backup" env="/usr/data/helper-script-backup/git-backup/.env"
+  local source_file="$HS_FILES/git-backup/S52Git-Backup"
+  [ -f "$service" ] && [ -f "$env" ] && [ -f "$source_file" ] || return 0
+  grep -q "WATCH_DIR" "$service" && return 0
+  echo -e "${white}Info: Updating the Git Backup service..."
+  cp -f "$source_file" "$service"
+  sed -i "2i source $env" "$service"
+  chmod +x "$service"
+  "$service" restart > /dev/null 2>&1 || true
+}
+
 function run_migrations(){
   migrate_update_manager_name
   migrate_update_manager_entry
@@ -377,4 +392,5 @@ function run_migrations(){
   migrate_fluidd_cfs_panel
   migrate_cfs_custom_filaments
   migrate_macro_descriptions
+  migrate_git_backup_service
 }

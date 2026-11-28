@@ -1,8 +1,16 @@
 #!/bin/sh
 
+# Il file .env (letto dalla riga "source" che l'installazione mette qui sopra) salva la cartella da
+# salvare nella variabile IFS, che pero' e' il separatore delle parole della shell: con quel valore
+# "$0 stop" veniva spezzato e "restart" non fermava il backup vecchio (ne restavano due).
+# La cartella passa in WATCH_DIR e IFS torna quello normale (spazio, tab, a capo).
+WATCH_DIR="${IFS:-/usr/data/printer_data/config}"
+IFS=' 	
+'
+
 start_git_backup() {
   echo "Info: Starting Git Backup..."
-  /usr/data/helper-script/files/git-backup/git-backup.sh -b "$BRANCH" -t "$IFS" -g origin > /dev/null 2>&1 &
+  /usr/data/helper-script/files/git-backup/git-backup.sh -b "$BRANCH" -t "$WATCH_DIR" -g origin > /dev/null 2>&1 &
 }
 
 case "$1" in
