@@ -56,6 +56,37 @@ function migrate_split_power_config(){
   rm -f "$old"
 }
 
+# Vero se la stampante sta stampando o e' in pausa. Se Moonraker non risponde, nel dubbio la
+# stampante si considera occupata: le correzioni che riavviano Klipper aspettano il prossimo avvio.
+function printer_busy(){
+  local state
+  state=$("$CURL" -s -m 5 "localhost:7125/printer/objects/query?print_stats=state" 2>/dev/null     | jq -r '.result.status.print_stats.state // empty' 2>/dev/null) || state=""
+  case "$state" in
+    standby|complete|cancelled|error) return 1;;
+    *) return 0;;
+  esac
+}
+
+# Esegue la correzione di printer.cfg $1 e riavvia Klipper solo se il file e' cambiato davvero.
+# Mai durante una stampa; e se la correzione non cambia niente non riavvia a ogni avvio.
+function patch_printer_cfg_and_restart(){
+  local before="${PRINTER_CFG}.prima"
+  if printer_busy; then
+    echo -e "${yellow}Info: The printer is busy, printer.cfg will be fixed the next time the script starts.${white}"
+    return 0
+  fi
+  cp -p "$PRINTER_CFG" "$before"
+  "$1"
+  if cmp -s "$before" "$PRINTER_CFG"; then
+    rm -f "$before"
+    echo -e "${yellow}Warning: printer.cfg could not be changed automatically, Klipper is not restarted.${white}"
+    return 0
+  fi
+  rm -f "$before"
+  echo -e "Info: Restarting Klipper service..."
+  restart_klipper
+}
+
 # Versions before 1.0.1 left gcode_position_max of [stepper_y] as set by the
 # firmware. Correct it on printers where the Bed Coordinates Fix is
 # already installed.
@@ -68,9 +99,7 @@ function migrate_stepper_y_gcode_max(){
     return 0
   fi
   echo -e "${white}Info: Correcting gcode_position_max in [stepper_y]..."
-  patch_stepper_y
-  echo -e "Info: Restarting Klipper service..."
-  restart_klipper
+  patch_printer_cfg_and_restart patch_stepper_y
 }
 
 # Version 1.0.3 also sets the nozzle wipe position on the brush (Y start added in
@@ -110,9 +139,7 @@ function migrate_bed_fix_wipe(){
     return 0
   fi
   echo -e "${white}Info: Applying the nozzle wipe position of the Bed Coordinates Fix..."
-  patch_nozzle_wipe
-  echo -e "Info: Restarting Klipper service..."
-  restart_klipper
+  patch_printer_cfg_and_restart patch_nozzle_wipe
 }
 
 # Version 1.0.4 sets the bed mesh area (mesh_max changed in 1.0.6). Apply it on printers where the Bed
@@ -135,9 +162,7 @@ function migrate_bed_fix_mesh(){
     return 0
   fi
   echo -e "${white}Info: Applying the bed mesh area of the Bed Coordinates Fix..."
-  patch_bed_mesh
-  echo -e "Info: Restarting Klipper service..."
-  restart_klipper
+  patch_printer_cfg_and_restart patch_bed_mesh
 }
 
 # A Fluidd update (or reinstall) replaces config.json and the Creality theme
