@@ -313,7 +313,9 @@ maybe_autorecover() {
   [ "$EVENT_OPEN" = "1" ] || return 0
   [ "$box" = "disconnect" ] || return 0
   [ "$serial" = "present" ] || return 0
-  case "$print" in printing|paused) return 0;; esac
+  # Solo a stampante sicuramente ferma: se lo stato non arriva (Moonraker lento o occupato) si
+  # aspetta il giro dopo invece di resettare l'USB magari durante una stampa.
+  case "$print" in standby|complete|cancelled|error) ;; *) return 0;; esac
   now="$(now_epoch)"
   age=$(( now - EVENT_START ))
   [ "$age" -ge "$RECOVER_AFTER" ] || return 0
