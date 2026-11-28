@@ -31,6 +31,8 @@ JQ="${JQ:-jq}"
 VER_PREVENT="9999999999"
 DEFDATA_FILE="${CFS_DEFDATA_FILE:-/usr/data/creality/userdata/config/material_database.json}"
 REBOOT_DELAY="${CFS_REBOOT_DELAY:-15}"
+CURL="${CURL:-/usr/data/helper-script/files/fixes/curl}"
+[ -x "$CURL" ] || CURL=curl
 ID_FIRST=90001
 ID_LAST=99999
 
@@ -388,12 +390,24 @@ apply_to_printer() {
   if [ ! -f /tmp/cfs-materials-reboot ]; then
     touch /tmp/cfs-materials-reboot
     if command -v setsid > /dev/null 2>&1; then
-      setsid sh -c "sleep $REBOOT_DELAY; sync; reboot" > /dev/null 2>&1 < /dev/null &
+      setsid sh "$0" reboot-if-idle > /dev/null 2>&1 < /dev/null &
     else
-      nohup sh -c "sleep $REBOOT_DELAY; sync; reboot" > /dev/null 2>&1 < /dev/null &
+      nohup sh "$0" reboot-if-idle > /dev/null 2>&1 < /dev/null &
     fi
   fi
-  echo "The printer restarts in $REBOOT_DELAY seconds so the screen shows the filaments."
+  echo "The printer restarts in $REBOOT_DELAY seconds so the screen shows the filaments (not if a print starts meanwhile)."
+}
+
+# Riavvio ritardato: prima di riavviare ricontrolla la stampante. Se intanto e' partita una stampa
+# (o Moonraker non risponde) non riavvia: i filamenti nuovi si vedono alla prossima accensione.
+reboot_if_idle() {
+  local state
+  sleep "$REBOOT_DELAY"
+  state=$("$CURL" -s -m 5 "localhost:7125/printer/objects/query?print_stats=state" 2>/dev/null     | "$JQ" -r '.result.status.print_stats.state // empty' 2>/dev/null) || state=""
+  rm -f /tmp/cfs-materials-reboot
+  case "$state" in
+    standby|complete|cancelled|error) sync; reboot;;
+  esac
 }
 
 action="${1:-}"
@@ -405,5 +419,6 @@ case "$action" in
   list) cmd_list;;
   reapply) cmd_reapply; cmd_export;;
   export) cmd_export;;
+  reboot-if-idle) reboot_if_idle;;
   *) echo "Usage: cfs_materials.sh add BASE BRAND NAME TYPE NOZZLE MIN MAX RRGGBB | remove ID | remove-all | list | reapply | export"; exit 1;;
 esac
