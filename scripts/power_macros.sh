@@ -70,7 +70,7 @@ function apply_power_macros(){
   if [ -d "$KAMP_FOLDER" ]; then
     # KAMP provides its own START_PRINT, so the copied one must stay disabled.
     echo -e "Info: KAMP is installed, disabling [gcode_macro START_PRINT] in gcode_macro.cfg file..."
-    sed -i '/\[gcode_macro START_PRINT\]/,/^\s*CX_PRINT_DRAW_ONE_LINE/ { /^\s*$/d }' "$MACROS_CFG"
+    sed -i '/^\[gcode_macro START_PRINT\]/,/^\s*CX_PRINT_DRAW_ONE_LINE/ { /^\s*$/d }' "$MACROS_CFG"
     sed -i '/^\[gcode_macro START_PRINT\]/,/^\s*$/ s/^\(\s*\)\([^#]\)/#\1\2/' "$MACROS_CFG"
   fi
   ensure_printer_include "gcode_macro.cfg"

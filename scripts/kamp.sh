@@ -43,11 +43,13 @@ function install_kamp(){
         ln -sf "$KAMP_URL"/Start_Print.cfg "$KAMP_FOLDER"/Start_Print.cfg
         cp "$KAMP_URL"/KAMP_Settings.cfg "$KAMP_FOLDER"/KAMP_Settings.cfg
         ln -sf "$VIRTUAL_PINS_URL" "$VIRTUAL_PINS_FILE"
-        if grep -q "[virtual_pins]" "$PRINTER_CFG" ; then
+        # "^\[...\]": senza ^ e \ le parentesi quadre sono un insieme di lettere e il controllo
+        # trovava sempre qualcosa, cosi' ogni installazione aggiungeva un'altra riga [virtual_pins].
+        if grep -q "^\[virtual_pins\]" "$PRINTER_CFG" ; then
+          echo -e "Info: [virtual_pins] configuration is already enabled in printer.cfg file..."
+        else
           echo -e "Info: Adding [virtual_pins] configuration in printer.cfg file..."
           sed -i '/\[include sensorless.cfg\]/i [virtual_pins]' "$PRINTER_CFG"
-        else
-          echo -e "Info: [virtual_pins] configuration is already enabled in printer.cfg file..."
         fi
         if grep -q "include Helper-Script/KAMP/KAMP_Settings" "$PRINTER_CFG" ; then
           echo -e "Info: KAMP configurations are already enabled in printer.cfg file..."
@@ -55,9 +57,11 @@ function install_kamp(){
           echo -e "Info: Adding KAMP configurations in printer.cfg file..."
           sed -i '/\[include printer_params\.cfg\]/a [include Helper-Script/KAMP/KAMP_Settings.cfg]' "$PRINTER_CFG"
         fi
-        if grep -q "\[gcode_macro START_PRINT\]" "$MACROS_CFG" ; then
+        # Solo la macro attiva (^): quella gia' commentata con # non va toccata, altrimenti la
+        # cancellazione delle righe vuote arrivava fino alla fine del file.
+        if grep -q "^\[gcode_macro START_PRINT\]" "$MACROS_CFG" ; then
           echo -e "Info: Disabling [gcode_macro START_PRINT] in gcode_macro.cfg file..."
-          sed -i '/\[gcode_macro START_PRINT\]/,/^\s*CX_PRINT_DRAW_ONE_LINE/ { /^\s*$/d }' "$MACROS_CFG"
+          sed -i '/^\[gcode_macro START_PRINT\]/,/^\s*CX_PRINT_DRAW_ONE_LINE/ { /^\s*$/d }' "$MACROS_CFG"
           sed -i '/^\[gcode_macro START_PRINT\]/,/^\s*$/ s/^\(\s*\)\([^#]\)/#\1\2/' "$MACROS_CFG"
         else
           echo -e "Info: [gcode_macro START_PRINT] is already disabled in gcode_macro.cfg file..."
@@ -109,7 +113,7 @@ function remove_kamp(){
         rm -rf "$HS_CONFIG_FOLDER"/KAMP
         rm -f "$KLIPPER_EXTRAS_FOLDER"/virtual_pins.py 
         rm -f "$KLIPPER_EXTRAS_FOLDER"/virtual_pins.pyc
-        if grep -q "[virtual_pins]" "$PRINTER_CFG" ; then
+        if grep -q "^\[virtual_pins\]" "$PRINTER_CFG" ; then
           echo -e "Info: Removing [virtual_pins] configuration in printer.cfg file..."
           sed -i '/\[virtual_pins\]/d' "$PRINTER_CFG"
         else
