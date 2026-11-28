@@ -28,7 +28,7 @@ function add_creality_theme_presets(){
   [ -f "$cfg" ] || return 1
   jq --argjson presets "$FLUIDD_LOGO_PRESETS" \
     '.themePresets = ((.themePresets // []) | map(select(.name != "Creality V1" and .name != "Creality V2" and .name != "Creality")) + $presets)' \
-    "$cfg" > "$cfg.tmp" && mv "$cfg.tmp" "$cfg"
+    "$cfg" > "$cfg.tmp" && mv "$cfg.tmp" "$cfg" && chmod 644 "$cfg"
 }
 
 # Makes the Creality theme the one Fluidd uses, through the Moonraker database
@@ -50,6 +50,8 @@ function apply_creality_dynamic_logos(){
   echo -e "${white}"
   echo -e "Info: Copying files..."
   cp "$FLUIDD_LOGO_URL2" "$FLUIDD_FOLDER"/logo_creality_v2.svg
+  # Leggibile dal server web di Fluidd, altrimenti il logo sparisce (errore 403).
+  chmod 644 "$FLUIDD_FOLDER"/logo_creality_v2.svg
   echo -e "Info: Adding the Creality theme to the Fluidd configuration..."
   if ! add_creality_theme_presets; then
     error_msg "Unable to update the Fluidd config.json file!"

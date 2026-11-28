@@ -30,7 +30,7 @@ function add_power_script_theme_preset(){
   [ -f "$cfg" ] || return 1
   jq --argjson presets "$POWER_THEME_PRESETS" \
     '.themePresets = ((.themePresets // []) | map(select(.name != "Power Script" and .name != "PowerUI" and .name != "ADL")) + $presets)' \
-    "$cfg" > "$cfg.tmp" && mv "$cfg.tmp" "$cfg"
+    "$cfg" > "$cfg.tmp" && mv "$cfg.tmp" "$cfg" && chmod 644 "$cfg"
 }
 
 # Makes the ADL theme the one Fluidd uses, through the Moonraker database

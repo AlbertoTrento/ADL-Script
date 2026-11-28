@@ -171,6 +171,8 @@ function migrate_bed_fix_mesh(){
 function migrate_fluidd_logos(){
   [ -f "$FLUIDD_LOGO_FILE" ] || return 0
   [ -f "$FLUIDD_FOLDER/config.json" ] || return 0
+  # Logo e config.json leggibili dal server web di Fluidd (con permessi sbagliati: errore 403).
+  chmod 644 "$FLUIDD_LOGO_FILE" "$FLUIDD_FOLDER/config.json"
   local state current
   state=$(jq -r --arg c "$FLUIDD_LOGO_COLOR" '([.themePresets[]? | select(.name == "Creality V1" or .name == "Creality V2")] | length) as $old | ([.themePresets[]? | select(.name == "Creality" and .color == $c)] | length) as $ok | "\($old) \($ok)"' "$FLUIDD_FOLDER/config.json" 2>/dev/null) || state=""
   if [ "$state" != "0 1" ]; then
@@ -213,6 +215,7 @@ function migrate_fluidd_power_theme_to_adl(){
 function migrate_fluidd_power_theme(){
   [ -f "$FLUIDD_THEME_LOGO_FILE" ] || return 0
   [ -f "$FLUIDD_FOLDER/config.json" ] || return 0
+  chmod 644 "$FLUIDD_FOLDER/config.json"
   local current
   if [ -f "$FLUIDD_THEME_LOGO_URL" ] && ! cmp -s "$FLUIDD_THEME_LOGO_URL" "$FLUIDD_THEME_LOGO_FILE"; then
     echo -e "${white}Info: Updating the ADL logo for Fluidd..."
