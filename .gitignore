@@ -1,3 +1,4 @@
 *.DS_Store
 desktop.ini
-.boot_animation_installed
+.boot_animation_installed*
+.cfs_firmware_ok

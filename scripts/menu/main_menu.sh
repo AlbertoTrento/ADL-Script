@@ -16,6 +16,40 @@ else
   exit 1
 fi
 
+# Lo script e' fatto per il firmware CFS (versioni 2.x, con box.cfg). Su una stampante senza quel
+# firmware (per esempio una scheda di ricambio che non lo accetta) molte voci non funzionano o
+# possono fare danni: si avvisa e si chiede conferma prima di andare avanti. Una volta sola per
+# installazione (il segno resta nella cartella dello script).
+function firmware_version_found(){
+  local file
+  for file in /usr/data/creality/userdata/config/system_version.json \
+              /usr/data/creality/userdata/config/system_config.json \
+              /usr/data/creality/userdata/version /etc/version; do
+    [ -f "$file" ] || continue
+    grep -o '[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*' "$file" 2>/dev/null | head -n 1 && return 0
+  done
+  return 0
+}
+cfs_check_marker="$(dirname "$(readlink -f "$0")")/.cfs_firmware_ok"
+if [ ! -f "$cfs_check_marker" ]; then
+  fw_version="$(firmware_version_found)"
+  if [ -f /usr/data/printer_data/config/box.cfg ] && [ "${fw_version%%.*}" = "2" ]; then
+    touch "$cfs_check_marker"
+  else
+    echo
+    echo " WARNING: this script is made for the K1C with the CFS firmware (2.3.5.x)."
+    echo " Detected firmware: ${fw_version:-unknown}, box.cfg: $([ -f /usr/data/printer_data/config/box.cfg ] && echo present || echo missing)."
+    echo " Without the CFS firmware several options do not work and some can change files they should not."
+    while true; do
+      read -p " Continue anyway? (y/n): " cfs_yn
+      case "$cfs_yn" in
+        Y|y) touch "$cfs_check_marker"; break;;
+        N|n) exit 0;;
+      esac
+    done
+  fi
+fi
+
 function get_script_version() {
   local version
   cd "${HELPER_SCRIPT_FOLDER}"
